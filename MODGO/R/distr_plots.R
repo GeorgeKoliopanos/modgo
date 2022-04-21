@@ -18,9 +18,11 @@
 #' @export
 #' @import ggplot2
 #' @importFrom gridExtra grid.arrange
+#' @import wesanderson
 
 distr_plots <- function(Modgo_obj,
-                        variables=colnames(Modgo_obj[["OriginalData"]]),sim_dataset=1) {
+                        variables=colnames(Modgo_obj[["OriginalData"]]),
+                        sim_dataset=1,wespalette="GrandBudapest1") {
   
   if (!all(variables %in% colnames(Modgo_obj[["OriginalData"]]))){
     
@@ -42,7 +44,7 @@ distr_plots <- function(Modgo_obj,
     p <-ggplot2::ggplot(df,aes(y=dataset)) + 
       geom_bar(aes(fill=as.factor(comb_data))) +
       scale_y_discrete(labels= c("Original","Simulated")) +
-      scale_fill_manual(values = wes_palette(n=length(unique(comb_data)), "GrandBudapest1",type = "continuous")) +
+      scale_fill_manual(values = wesanderson::wes_palette(n=length(unique(comb_data)),name=wespalette,type = "continuous")) +
       theme(legend.title = element_blank()) +
       ylab(label=i) +
       xlab(label="")
@@ -51,7 +53,7 @@ distr_plots <- function(Modgo_obj,
         theme(legend.position = "none") +
         geom_boxplot() +
         scale_x_discrete(labels= c("Original","Simulated")) +
-        scale_color_manual(values = wes_palette(n=length(unique(dataset)), "GrandBudapest1",type = "continuous")) +
+        scale_color_manual(values = wesanderson::wes_palette(n=length(unique(dataset)), name=wespalette,type = "continuous")) +
         ylab(label=i) +
         xlab(label="")
       

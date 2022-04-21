@@ -7,7 +7,8 @@
 distr_plots(
   Modgo_obj,
   variables = colnames(Modgo_obj[["OriginalData"]]),
-  sim_dataset = 1
+  sim_dataset = 1,
+  wespalette = "GrandBudapest1"
 )
 }
 \arguments{
