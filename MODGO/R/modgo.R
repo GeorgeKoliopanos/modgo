@@ -59,10 +59,12 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
                            change_cov= c(),change_amount= 0,seed= 1,
                            thresh_var= c(), thresh_force = FALSE, 
                            var_prop= c()) {
+  
+  if (!is.na(seed)){
   # Setting Seed
   set.seed(seed)
   
-  
+  }
   
   #Check input  
   
@@ -317,8 +319,10 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
   mean_corr <- matrix(0,nrow =ncol(data),ncol = ncol(data))
   
   SimulatedData <- vector(mode = "list", length = nrep)
+  i=1
+  counter <- 0
   # Loop for creating new datasets and obtaining their mean correlations
-  for (i in c(1:nrep)){
+  while (i < nrep+1){
     
   mt_sim <- MASS::mvrnorm(n = ceiling(nprod*thresh_multi), 
                           mu = rep(0, ncol(data))+ns,
@@ -354,10 +358,7 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
     df_sim <- df_sim[which(df_sim[thresh_var[j,1]]< up_thresh &
                              df_sim[thresh_var[j,1]]> low_thresh),]
   }
-    if(length(df_sim[,1]) < nprod || is.null(df_sim)){
-      stop("Could not create a dataset with this specific thresholds,
-           try less repetitions")
-    } else {df_sim <- df_sim[c(1:nprod),]}
+  
   
   }
   #Proportion process
@@ -366,32 +367,34 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
       rounded_length <- round(nprod*var_prop)
       df_sim_1 <- df_sim[which(df_sim[,names(var_prop)] == 1),]
       df_sim_0 <- df_sim[which(df_sim[,names(var_prop)] == 0),]
-      if(length(df_sim_1[,1]) < rounded_length || is.null(df_sim)){
-        stop("Could not create a dataset with this specific thresholds,
-             try less repetitions")
-      } 
-      if(length(df_sim_0[,1]) < (nprod-rounded_length) || is.null(df_sim)){
-        stop("Could not create a dataset with this specific thresholds,
-             try less repetitions")
-      }
       df_sim <- rbind(df_sim_1[c(1:rounded_length),],
                       df_sim_0[c(1:(nprod-rounded_length)),])
       
-      if(length(df_sim[,1]) < nprod || is.null(df_sim)){
-        stop("Could not create a dataset with this specific thresholds,
-             try less repetitions")
-      } else {df_sim <- df_sim[c(1:nprod),]}
+      
+      
+      
     
   }
   
-  #Correlation calculation
-  Correlations[[i]] <- cor(df_sim)
-  SimulatedData[[i]] <- df_sim
+  if(length(df_sim[,1]) < nprod || is.null(df_sim)){
+    i <- i-1
+    counter <-counter +1
+  } else {
+    df_sim <- df_sim[c(1:nprod),]
+    
+    #Correlation calculation
+    Correlations[[i]] <- cor(df_sim)
+    SimulatedData[[i]] <- df_sim
+    
+    #Mean correlation calculation
+    mean_corr <- mean_corr + (cor(df_sim)/nrep)
+  }
   
-  #Mean correlation calculation
-  mean_corr <- mean_corr + (cor(df_sim)/nrep)
+  if(counter > 10*nrep){
+    stop("Could not create simulated datasets with this specific thresholds")
+  } 
   
-  
+  i <- i + 1
   }
   
   

@@ -52,6 +52,7 @@ distr_plots <- function(Modgo_obj,
      p <-ggplot2::ggplot(df,aes(x=dataset, y=comb_data,color=dataset)) + 
         theme(legend.position = "none") +
         geom_boxplot() +
+        theme_bw() +
         scale_x_discrete(labels= c("Original","Simulated")) +
         scale_color_manual(values = wesanderson::wes_palette(n=length(unique(dataset)), name=wespalette,type = "continuous")) +
         ylab(label=i) +
