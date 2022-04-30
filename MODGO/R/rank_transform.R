@@ -7,7 +7,7 @@
 #' @param ties_method Method on how to deal with equal values 
 #' during rank transformation.Acceptable input:"max","average","min".
 #' @return A numeric vector.
-#' @author Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos
+#' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' @examples
 #' 
 #' data("Cleveland",package="modgo")

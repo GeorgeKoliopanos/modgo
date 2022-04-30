@@ -24,19 +24,22 @@ modgo(
 )
 }
 \arguments{
-\item{data}{a data frame of the dataset.}
+\item{data}{a data frame containing the data whose characteristics are to be 
+mimicked during the data simulation.}
 
 \item{ties_method}{Method on how to deal with equal values 
-during rank transformation.Acceptable input:"max","average","min".}
+during rank transformation. Acceptable input:"max","average","min".}
 
 \item{variables}{a vector of which variables you want to transform.
 Default:colnames(data)}
 
-\item{bin_variables}{a vector of the binary variables.}
+\item{bin_variables}{a character vector listing the binary variables.}
 
-\item{categ_variables}{a vector of ordinal categorical variables.}
+\item{categ_variables}{a character vector listing the ordinal categorical 
+variables.}
 
-\item{nprod}{A number of samples for the simulated to include}
+\item{nprod}{Number of rows of each simulated dataset. Default is
+the number of rows of \code{data}.}
 
 \item{sigma}{a covariance matrix of NxN (N= number of variables) 
 provided by the user to bypass the covariance matrix calculations}
@@ -53,7 +56,8 @@ multivariate mean. Default: FALSE}
 \item{change_amount}{the amount of change in  the covariance
 of a specific pair of variables.}
 
-\item{seed}{A numeric value specifying the seed.}
+\item{seed}{A numeric value specifying the random seed. If \code{seed = NA},
+no random seed is set.}
 
 \item{thresh_var}{A data frame that contains the thresholds(left and right)
 of specified variables
@@ -62,15 +66,12 @@ of specified variables
 
 \item{thresh_force}{A logical value indicating if you want to force threshold
 in case the proportion of samples that can surpass the threshold are less 
-than 10%}
+than 10\%}
 
 \item{var_prop}{A named vector that provides a  proportion of 
- value=1 for a specific binary variable(=name of the vector) that will be
- the proportion of this value in the simulated data sets.[this may increase
- execution time drastically]
-\item{Correlations}{a list of correlations for each repetition + 
-a mean correlation matrix in as its last element}
-\item{SimulatedData}{a data frame containing the last simulated dataset}}
+value=1 for a specific binary variable(=name of the vector) that will be
+the proportion of this value in the simulated data sets.[this may increase
+execution time drastically]}
 
 \item{thresh_right}{A numeric vector indicating the lower limits of the 
 the specified variables}
@@ -79,11 +80,27 @@ the specified variables}
 the specified variables}
 }
 \value{
-A numeric vector.
+A list with the following components:
+\item{SimulatedData}{A list of data frames containing the simulated data.}
+\item{OriginalData}{A data frame with the input data.}
+\item{Correlations}{a list of correlation matrices. The ith element is the
+correlation matrix for the ith simulated dataset. The \code{(repn + 1)}th
+(last) element of the list is the average of the correlation matrices.}
+\item{Binary_variables}{character vector listing the binary variables}
+\item{Categorical_variables}{a character vector listing the ordinal 
+categorical variables}
+\item{Covariance_Matrix}{Covariance matrix used when generating observations
+from a multivariate normal distribution.} 
+\item{Seed}{Random seed used.}
+\item{Samples_Produced}{Number of rows of each simulated dataset.} 
+\item{Sim_Dataset_Number}{Number of simulated datasets produced.}
 }
 \description{
 \code{modgo} Create mock dataset from a real one by using 
 ranked inverse normal transformation.
+}
+\details{
+[We can add more details here, once the paper is almost finished]
 }
 \examples{
 data("Cleveland",package="modgo")
@@ -92,7 +109,7 @@ test_modgo <- modgo(data = Cleveland,
      categ_variables =c("Chestpaintype"))
 }
 \author{
-Francisco Miguel Echevarria, George Koliopanos
+Francisco M. Ojeda, George Koliopanos
 }
 \keyword{data}
 \keyword{generation}

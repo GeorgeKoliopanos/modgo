@@ -3,25 +3,30 @@
 #' \code{modgo} Create mock dataset from a real one by using 
 #' ranked inverse normal transformation.
 #' 
+#' [We can add more details here, once the paper is almost finished]
 #' 
-#' @param data a data frame of the dataset.
+#' @param data a data frame containing the data whose characteristics are to be 
+#' mimicked during the data simulation.
 #' @param sigma a covariance matrix of NxN (N= number of variables) 
 #' provided by the user to bypass the covariance matrix calculations
 #' @param ties_method Method on how to deal with equal values 
-#' during rank transformation.Acceptable input:"max","average","min".
+#' during rank transformation. Acceptable input:"max","average","min".
 #' @param variables a vector of which variables you want to transform.
 #' Default:colnames(data)
-#' @param bin_variables  a vector of the binary variables.
-#' @param categ_variables a vector of ordinal categorical variables.
+#' @param bin_variables  a character vector listing the binary variables.
+#' @param categ_variables a character vector listing the ordinal categorical 
+#' variables.
 #' @param nrep number of repetitions.
 #' @param noise_mu Logical value if you want to apply noise to  
 #' multivariate mean. Default: FALSE
 #' @param pertr_vec A vector of variables that the user wants to perturb
-#' @param nprod A number of samples for the simulated to include
+#' @param nprod Number of rows of each simulated dataset. Default is
+#' the number of rows of \code{data}.
 #' @param change_cov change the covariance of a specific pair of variables.
 #' @param change_amount the amount of change in  the covariance
 #'  of a specific pair of variables.
-#' @param seed A numeric value specifying the seed.
+#' @param seed A numeric value specifying the random seed. If \code{seed = NA},
+#' no random seed is set.
 #' @param thresh_var A data frame that contains the thresholds(left and right)
 #' of specified variables
 #' (1st column: variable names, 2nd column: Left thresholds, 
@@ -32,17 +37,26 @@
 #' the specified variables
 #' @param thresh_force A logical value indicating if you want to force threshold
 #' in case the proportion of samples that can surpass the threshold are less 
-#' than 10%
+#' than 10\%
 #' @param var_prop A named vector that provides a  proportion of 
 #'  value=1 for a specific binary variable(=name of the vector) that will be
 #'  the proportion of this value in the simulated data sets.[this may increase
 #'  execution time drastically]
-#' \item{Correlations}{a list of correlations for each repetition + 
-#' a mean correlation matrix in as its last element}
-#' \item{SimulatedData}{a data frame containing the last simulated dataset}
-#' 
-#' @return A numeric vector.
-#' @author Francisco Miguel Echevarria, George Koliopanos
+#' @return A list with the following components:
+#' \item{SimulatedData}{A list of data frames containing the simulated data.}
+#' \item{OriginalData}{A data frame with the input data.}
+#' \item{Correlations}{a list of correlation matrices. The ith element is the
+#' correlation matrix for the ith simulated dataset. The \code{(repn + 1)}th
+#' (last) element of the list is the average of the correlation matrices.}
+#' \item{Binary_variables}{character vector listing the binary variables}
+#' \item{Categorical_variables}{a character vector listing the ordinal 
+#' categorical variables}
+#' \item{Covariance_Matrix}{Covariance matrix used when generating observations
+#' from a multivariate normal distribution.} 
+#' \item{Seed}{Random seed used.}
+#' \item{Samples_Produced}{Number of rows of each simulated dataset.} 
+#' \item{Sim_Dataset_Number}{Number of simulated datasets produced.} 
+#' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords mock data generation
 #' @examples 
 #' data("Cleveland",package="modgo")
@@ -131,11 +145,11 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
   # Noise in multivariate distributions centers
   if (noise_mu == TRUE){
     
-    ns = rnorm(ncol(data),mean = 0,sd=1)
+    ns <- rnorm(ncol(data),mean = 0,sd=1)
     
     
   } else {
-    ns=matrix(0,nrow = 1,ncol = ncol(data))
+    ns <- matrix(0,nrow = 1,ncol = ncol(data))
     
   }
   
@@ -206,10 +220,10 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
   
   
   Sigma <- suppressMessages(Sigma_transformation(
-                                data=data,data_z = df_rbi,Sigma,
-                                variables = variables,
-                                bin_variables = bin_variables,
-                                categ_variables=categ_var))
+    data=data,data_z = df_rbi,Sigma,
+    variables = variables,
+    bin_variables = bin_variables,
+    categ_variables=categ_var))
  
   options(warn = oldw)
  
@@ -227,7 +241,7 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
     }
     
   }
-  }else {Sigma=sigma}
+  }else {Sigma <- sigma}
   
 # Change specified pairs of covariance matrix by specified amount
  if (change_amount!=0 && length(change_cov)==2) {
@@ -319,13 +333,13 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
   mean_corr <- matrix(0,nrow =ncol(data),ncol = ncol(data))
   
   SimulatedData <- vector(mode = "list", length = nrep)
-  i=1
+  i <- 1
   counter <- 0
   # Loop for creating new datasets and obtaining their mean correlations
   while (i < nrep+1){
     
   mt_sim <- MASS::mvrnorm(n = ceiling(nprod*thresh_multi), 
-                          mu = rep(0, ncol(data))+ns,
+                          mu = rep(0, ncol(data)) + ns,
                           Sigma = Sigma)
   
   
@@ -405,6 +419,8 @@ modgo <- function(data,ties_method= "max",variables= colnames(data),
                  bin_variables,categ_variables,Sigma,seed,nprod,nrep)
   names(results) <-c("SimulatedData","OriginalData","Correlations",
                      "Binary_variables","Categorical_variables",
-                     "Covariance_Matrix","Seed","Samples_Produced","Sim_Dataset_Number")
+                     "Covariance_Matrix","Seed","Samples_Produced",
+                     "Sim_Dataset_Number")
   return(results)
-  }
+}
+

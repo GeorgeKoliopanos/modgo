@@ -7,7 +7,7 @@
 #' @param modgo_1 a list modgo object
 #' @export
 #' @return A modgo object/list.
-#' @author Francisco Miguel Echevarria, George Koliopanos
+#' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Multi-studies
 #'
 multicenter_comb <- function(modgo_1,...){

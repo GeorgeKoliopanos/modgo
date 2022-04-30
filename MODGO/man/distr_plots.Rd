@@ -8,7 +8,7 @@ distr_plots(
   Modgo_obj,
   variables = colnames(Modgo_obj[["OriginalData"]]),
   sim_dataset = 1,
-  wespalette = "GrandBudapest1"
+  wespalette = "Cavalcanti1"
 )
 }
 \arguments{
@@ -31,5 +31,5 @@ distr_plots(test_modgo)
 
 }
 \author{
-Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos
+Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 }

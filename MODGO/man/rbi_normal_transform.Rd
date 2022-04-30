@@ -26,7 +26,7 @@ test_rank <- rbi_normal_transform(Cleveland[,1])
 
 }
 \author{
-Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos
+Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 }
 \keyword{Normal}
 \keyword{rank}

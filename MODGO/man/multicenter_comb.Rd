@@ -17,6 +17,6 @@ Combines modgo objects from a multiple studies to a single one in order
 to calculate new correlations and visualise the data
 }
 \author{
-Francisco Miguel Echevarria, George Koliopanos
+Francisco M. Ojeda, George Koliopanos
 }
 \keyword{Multi-studies}

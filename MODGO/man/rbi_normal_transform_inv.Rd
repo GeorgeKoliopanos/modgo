@@ -28,7 +28,7 @@ test_inv_rank <- rbi_normal_transform_inv(x = test_rank,
 
 }
 \author{
-Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos
+Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 }
 \keyword{Inverse}
 \keyword{transformation}

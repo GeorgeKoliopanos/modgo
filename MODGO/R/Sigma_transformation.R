@@ -7,7 +7,7 @@
 #' @param ties_method Method on how to deal with equal values 
 #' during rank transformation.Acceptable input:"max","average","min".
 #' @return A numeric vector.
-#' @author Francisco Miguel Echevarria, George Koliopanos
+#' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Normal rank transformation
 #' @examples
 #'

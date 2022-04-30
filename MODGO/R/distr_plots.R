@@ -5,7 +5,7 @@
 #' 
 #' @param Modgo_obj A list object produced from modgo package
 #' @return A plot.
-#' @author Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos
+#' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
 #' @examples 
 #' data("Cleveland",package="modgo")

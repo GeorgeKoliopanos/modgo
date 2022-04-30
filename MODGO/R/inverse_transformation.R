@@ -6,7 +6,7 @@
 #' @param x a vector of z values 
 #' @param x_original a data frame or matrix of the original dataset
 #' @return A numeric vector.
-#' @author Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos
+#' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
 #' @examples
 #' data("Cleveland",package="modgo")

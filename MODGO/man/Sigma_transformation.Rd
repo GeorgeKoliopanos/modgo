@@ -30,7 +30,7 @@ polyserial functions
 
 }
 \author{
-Francisco Miguel Echevarria, George Koliopanos
+Francisco M. Ojeda, George Koliopanos
 }
 \keyword{Normal}
 \keyword{rank}

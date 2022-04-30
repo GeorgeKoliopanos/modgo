@@ -5,7 +5,7 @@
 #' 
 #' @param Modgo_obj A list object produced from modgo package
 #' @return A plot.
-#' @author Francisco Miguel Echevarria, George Koliopanos
+#' @author Francisco M. Ojeda, George Koliopanos
 #' 
 #' @examples
 #' 

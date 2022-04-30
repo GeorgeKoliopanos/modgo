@@ -35,5 +35,5 @@ corr_plots(test_modgo)
 
 }
 \author{
-Francisco Miguel Echevarria, George Koliopanos
+Francisco M. Ojeda, George Koliopanos
 }
