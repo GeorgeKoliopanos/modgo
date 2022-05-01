@@ -10,7 +10,9 @@
 #' @param sigma a covariance matrix of NxN (N= number of variables) 
 #' provided by the user to bypass the covariance matrix calculations
 #' @param ties_method Method on how to deal with equal values 
-#' during rank transformation. Acceptable input:"max","average","min".
+#' during rank transformation. Acceptable input:"max","average","min". This
+#' parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the 
+#' parameter \code{ties.method} of \code{\link[base]{rank}}.
 #' @param variables a vector of which variables you want to transform.
 #' Default:colnames(data)
 #' @param bin_variables  a character vector listing the binary variables.
@@ -66,20 +68,20 @@
 #' @export
 #' @importFrom Matrix nearPD
 
-modgo <- function(data,ties_method= "max",variables= colnames(data),
-                           bin_variables= c(),categ_variables= c(),
-                           nprod= nrow(data),sigma= c(),nrep= 100,
-                           noise_mu= FALSE, pertr_vec= c(),
-                           change_cov= c(),change_amount= 0,seed= 1,
-                           thresh_var= c(), thresh_force = FALSE, 
-                           var_prop= c()) {
+modgo <- function(data,ties_method=  "max", variables= colnames(data),
+                  bin_variables= c(),categ_variables= c(),
+                  nprod= nrow(data),sigma= c(),nrep= 100,
+                  noise_mu= FALSE, pertr_vec= c(),
+                  change_cov= c(),change_amount= 0,seed= 1,
+                  thresh_var= c(), thresh_force = FALSE, 
+                  var_prop= c()) {
   
   if (!is.na(seed)){
   # Setting Seed
   set.seed(seed)
   
   }
-  
+
   #Check input  
   
   if (!is.data.frame(data)){

@@ -28,7 +28,9 @@ modgo(
 mimicked during the data simulation.}
 
 \item{ties_method}{Method on how to deal with equal values 
-during rank transformation. Acceptable input:"max","average","min".}
+during rank transformation. Acceptable input:"max","average","min". This
+parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the 
+parameter \code{ties.method} of \code{\link[base]{rank}}.}
 
 \item{variables}{a vector of which variables you want to transform.
 Default:colnames(data)}

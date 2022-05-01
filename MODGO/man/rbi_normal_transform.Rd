@@ -4,13 +4,15 @@
 \alias{rbi_normal_transform}
 \title{Rank normal transformation}
 \usage{
-rbi_normal_transform(x, ties_method = "max")
+rbi_normal_transform(x, ties_method = c("max", "min", "average"))
 }
 \arguments{
 \item{x}{a numeric vector}
 
 \item{ties_method}{Method on how to deal with equal values 
-during rank transformation.Acceptable input:"max","average","min".}
+during rank transformation.Acceptable input:"max","average","min". This
+parameter is passed to the parameter \code{ties.method} of 
+\code{\link[base]{rank}}.}
 }
 \value{
 A numeric vector.
