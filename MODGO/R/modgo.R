@@ -22,7 +22,7 @@
 #' @param noise_mu Logical value if you want to apply noise to  
 #' multivariate mean. Default: FALSE
 #' @param pertr_vec A vector of variables that the user wants to perturb
-#' @param nprod Number of rows of each simulated dataset. Default is
+#' @param n_samples Number of rows of each simulated dataset. Default is
 #' the number of rows of \code{data}.
 #' @param change_cov change the covariance of a specific pair of variables.
 #' @param change_amount the amount of change in  the covariance
@@ -70,7 +70,7 @@
 
 modgo <- function(data,ties_method=  "max", variables= colnames(data),
                   bin_variables= c(),categ_variables= c(),
-                  nprod= nrow(data),sigma= c(),nrep= 100,
+                  n_samples= nrow(data),sigma= c(),nrep= 100,
                   noise_mu= FALSE, pertr_vec= c(),
                   change_cov= c(),change_amount= 0,seed= 1,
                   thresh_var= c(), thresh_force = FALSE, 
@@ -254,9 +254,19 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
  }
   
   
+  
+  # Check Sigma if it is positive definite
+  if(!all(eigen(Sigma)$value > 0)){
+    
+    print("Covariance matrix is not positive definite.") 
+    print("It will be replaced with nearest positive definite matrix")
+    Sigma <- Matrix::nearPD(Sigma,corr = TRUE)$mat
+  }
+  
+  
   ## Thresholds
   if (length(thresh_var[,1]) >0){
-    mt_sim <- MASS::mvrnorm(n = nprod, 
+    mt_sim <- MASS::mvrnorm(n = n_samples, 
                             mu = rep(0, ncol(data)) +ns,
                             Sigma = Sigma)
     df_sim <- data.frame(mt_sim)
@@ -270,31 +280,31 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     for (i in c(1:length(thresh_var[,1]))){
       if(is.na(thresh_var[i,2]))
       {low_thresh <-
-          min(df_sim[thresh_var[i,1]])-1}else{low_thresh <-thresh_var[i,2]}
+        min(df_sim[thresh_var[i,1]])-1}else{low_thresh <-thresh_var[i,2]}
       if(is.na(thresh_var[i,3]))
       {up_thresh <-
-          max(df_sim[thresh_var[i,1]])+1}else{up_thresh <-thresh_var[i,3]}
+        max(df_sim[thresh_var[i,1]])+1}else{up_thresh <-thresh_var[i,3]}
       
       
       df_sim <- df_sim[which(df_sim[thresh_var[i,1]]< up_thresh &
                                df_sim[thresh_var[i,1]]> low_thresh),]
     }
     
-      if(length(df_sim[,1])/nprod <0.1 & thresh_force == FALSE ){
+    if(length(df_sim[,1])/n_samples <0.1 & thresh_force == FALSE ){
       stop("The propotion of simulated samples passing
            the threshold is less than 10% ")
-      }else if(length(df_sim[,1])==0){
-        stop("The propotion of simulated samples passing
+    }else if(length(df_sim[,1])==0){
+      stop("The propotion of simulated samples passing
            the threshold is 0% ")
-      }else{thresh_multi <- 1.1*nprod/length(df_sim[,1])}
+    }else{thresh_multi <- 1.1*n_samples/length(df_sim[,1])}
     
     
-   }else{thresh_multi=1}
+  }else{thresh_multi=1}
   
   # Binary variables proportions
   if (length(var_prop) ==1 ){
     
-    mt_sim <- MASS::mvrnorm(n = nprod, 
+    mt_sim <- MASS::mvrnorm(n = n_samples, 
                             mu = rep(0, ncol(data)) +ns,
                             Sigma = Sigma)
     df_sim <- data.frame(mt_sim)
@@ -307,11 +317,11 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
     counts_1 <- length(which(df_sim[,names(var_prop)]==1))
     counts_0 <- length(which(df_sim[,names(var_prop)]==0))
-    req_1 <- var_prop * nprod
-    req_0 <- (1-var_prop) * nprod
+    req_1 <- var_prop * n_samples
+    req_0 <- (1-var_prop) * n_samples
     
     if (req_1 >= counts_1){
-    thresh_multi <-  (1.1*req_1)/counts_1
+      thresh_multi <-  (1.1*req_1)/counts_1
       
     }else if (req_1 < counts_1){
       thresh_multi <-  (1.1*req_0)/counts_0
@@ -319,14 +329,6 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     }
     
     
-  }
-  
-  # Check Sigma if it is positive definite
-  if(!all(eigen(Sigma)$value > 0)){
-    
-    print("Covariance matrix is not positive definite.") 
-    print("It will be replaced with nearest positive definite matrix")
-    Sigma <- Matrix::nearPD(Sigma,corr = TRUE)$mat
   }
   
   # Starting loop for many repetions
@@ -340,7 +342,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   # Loop for creating new datasets and obtaining their mean correlations
   while (i < nrep+1){
     
-  mt_sim <- MASS::mvrnorm(n = ceiling(nprod*thresh_multi), 
+  mt_sim <- MASS::mvrnorm(n = ceiling(n_samples*thresh_multi), 
                           mu = rep(0, ncol(data)) + ns,
                           Sigma = Sigma)
   
@@ -380,11 +382,11 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   #Proportion process
   if(length(var_prop)==1){
 
-      rounded_length <- round(nprod*var_prop)
+      rounded_length <- ceiling(n_samples*var_prop)
       df_sim_1 <- df_sim[which(df_sim[,names(var_prop)] == 1),]
       df_sim_0 <- df_sim[which(df_sim[,names(var_prop)] == 0),]
       df_sim <- rbind(df_sim_1[c(1:rounded_length),],
-                      df_sim_0[c(1:(nprod-rounded_length)),])
+                      df_sim_0[c(1:(n_samples-rounded_length)),])
       
       
       
@@ -392,18 +394,18 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
   }
   
-  if(length(df_sim[,1]) < nprod || is.null(df_sim)){
+  if(length(df_sim[,1]) < n_samples || is.null(df_sim) || apply(df_sim, 2, function(x) any(is.na(x))) ){
     i <- i-1
     counter <-counter +1
   } else {
-    df_sim <- df_sim[c(1:nprod),]
+    df_sim <- df_sim[c(1:n_samples),]
     
     #Correlation calculation
     Correlations[[i]] <- cor(df_sim)
     SimulatedData[[i]] <- df_sim
     
     #Mean correlation calculation
-    mean_corr <- mean_corr + (cor(df_sim)/nrep)
+    mean_corr <- mean_corr + (Correlations[[i]]/nrep)
   }
   
   if(counter > 10*nrep){
@@ -418,7 +420,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   names(Correlations) <- c(paste0("rep",seq(1:nrep)),"Mean")
   
   results <-list(SimulatedData,OriginalData,Correlations,
-                 bin_variables,categ_variables,Sigma,seed,nprod,nrep)
+                 bin_variables,categ_variables,Sigma,seed,n_samples,nrep)
   names(results) <-c("SimulatedData","OriginalData","Correlations",
                      "Binary_variables","Categorical_variables",
                      "Covariance_Matrix","Seed","Samples_Produced",
