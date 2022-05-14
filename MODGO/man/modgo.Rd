@@ -10,7 +10,7 @@ modgo(
   variables = colnames(data),
   bin_variables = c(),
   categ_variables = c(),
-  nprod = nrow(data),
+  n_samples = nrow(data),
   sigma = c(),
   nrep = 100,
   noise_mu = FALSE,
@@ -35,12 +35,14 @@ parameter \code{ties.method} of \code{\link[base]{rank}}.}
 \item{variables}{a vector of which variables you want to transform.
 Default:colnames(data)}
 
-\item{bin_variables}{a character vector listing the binary variables.}
+\item{bin_variables}{a character vector listing the binary variables in 
+\code{variables}.}
 
-\item{categ_variables}{a character vector listing the ordinal categorical 
+\item{categ_variables}{a character vector listing the ordinal categorical in 
+\code{variables}.
 variables.}
 
-\item{nprod}{Number of rows of each simulated dataset. Default is
+\item{n_samples}{Number of rows of each simulated dataset. Default is
 the number of rows of \code{data}.}
 
 \item{sigma}{a covariance matrix of NxN (N= number of variables) 

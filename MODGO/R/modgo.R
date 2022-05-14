@@ -15,8 +15,10 @@
 #' parameter \code{ties.method} of \code{\link[base]{rank}}.
 #' @param variables a vector of which variables you want to transform.
 #' Default:colnames(data)
-#' @param bin_variables  a character vector listing the binary variables.
-#' @param categ_variables a character vector listing the ordinal categorical 
+#' @param bin_variables  a character vector listing the binary variables in 
+#' \code{variables}.
+#' @param categ_variables a character vector listing the ordinal categorical in 
+#' \code{variables}.
 #' variables.
 #' @param nrep number of repetitions.
 #' @param noise_mu Logical value if you want to apply noise to  

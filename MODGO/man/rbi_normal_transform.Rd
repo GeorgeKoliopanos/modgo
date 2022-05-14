@@ -2,7 +2,7 @@
 % Please edit documentation in R/rank_transform.R
 \name{rbi_normal_transform}
 \alias{rbi_normal_transform}
-\title{Rank normal transformation}
+\title{Rank-based inverse normal transformation}
 \usage{
 rbi_normal_transform(x, ties_method = c("max", "min", "average"))
 }
@@ -10,22 +10,28 @@ rbi_normal_transform(x, ties_method = c("max", "min", "average"))
 \item{x}{a numeric vector}
 
 \item{ties_method}{Method on how to deal with equal values 
-during rank transformation.Acceptable input:"max","average","min". This
+during rank transformation. Acceptable input:"max","average","min". This
 parameter is passed to the parameter \code{ties.method} of 
 \code{\link[base]{rank}}.}
 }
 \value{
-A numeric vector.
+A numeric vector with the results of applying a rank-based inverse
+normal transformation to \code{x}.
 }
 \description{
-Transforms values of a vector to ranks 
-and ranks to z values from a normal distribution
+Applies a rank-based inverse normal transformation to a vector.
 }
 \examples{
 
 data("Cleveland",package="modgo")
 test_rank <- rbi_normal_transform(Cleveland[,1])
 
+}
+\references{
+Beasley, T Mark, Stephen Erickson, and David B Allison (2009), 
+``Rank-Based Inverse Normal Transformations Are Increasingly Used, but Are
+  They Merited?,'' Behavior Genetics 39 (5), 580–95,
+  \url{https://doi.org/10.1007/s10519-009-9281-0}.
 }
 \author{
 Andreas Ziegler, Francisco M. Ojeda, George Koliopanos

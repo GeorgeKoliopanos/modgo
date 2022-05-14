@@ -3,10 +3,24 @@
 #' Transforming covariance matrix using biserial, tetrachoric and
 #' polyserial functions 
 #' 
-#' @param x a vector 
-#' @param ties_method Method on how to deal with equal values 
-#' during rank transformation.Acceptable input:"max","average","min".
-#' @return A numeric vector.
+#' This function is used by internally by \code{\link[modgo]{modgo}}.
+#' 
+#' @param data a data frame containing the original data.
+#' @param data_z a data frame where the continuous variables in \code{data} 
+#' have transformed using the rank-based inverse normal transformation. Other
+#' variables are unchanged. 
+#' @param Sigma A square matrix of size \code{length(variables)} containing
+#' the covariances between the rank-based inverse normal transformed continuous
+#' variables, and ones in the diagonal. 
+#' @param variables a character vector listing the variables in the covariance
+#' matrix \code{Sigma}
+#' @param bin_variables  a character vector listing the binary variables in 
+#' \code{variables}.
+#' @param categ_variables a character vector listing the ordinal categorical in 
+#' \code{variables}.
+#' @return The matrix \code{Sigma} with all entries corresponding to binary
+#' and categorical ordinal variables filled using the corresponding correlation
+#' function (biserial, tetrachoric, polyserial).
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Normal rank transformation
 #' @examples

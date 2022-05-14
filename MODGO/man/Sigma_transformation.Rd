@@ -14,17 +14,36 @@ Sigma_transformation(
 )
 }
 \arguments{
-\item{x}{a vector}
+\item{data}{a data frame containing the original data.}
 
-\item{ties_method}{Method on how to deal with equal values 
-during rank transformation.Acceptable input:"max","average","min".}
+\item{data_z}{a data frame where the continuous variables in \code{data} 
+have transformed using the rank-based inverse normal transformation. Other
+variables are unchanged.}
+
+\item{Sigma}{A square matrix of size \code{length(variables)} containing
+the covariances between the rank-based inverse normal transformed continuous
+variables, and ones in the diagonal.}
+
+\item{variables}{a character vector listing the variables in the covariance
+matrix \code{Sigma}}
+
+\item{bin_variables}{a character vector listing the binary variables in 
+\code{variables}.}
+
+\item{categ_variables}{a character vector listing the ordinal categorical in 
+\code{variables}.}
 }
 \value{
-A numeric vector.
+The matrix \code{Sigma} with all entries corresponding to binary
+and categorical ordinal variables filled using the corresponding correlation
+function (biserial, tetrachoric, polyserial).
 }
 \description{
 Transforming covariance matrix using biserial, tetrachoric and
 polyserial functions
+}
+\details{
+This function is used by internally by \code{\link[modgo]{modgo}}.
 }
 \examples{
 
