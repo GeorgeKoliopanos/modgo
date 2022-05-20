@@ -1,19 +1,15 @@
-#' Rank-based inverse normal transformation
+#' Rank normal transformation
 #' 
-#' Applies a rank-based inverse normal transformation to a vector.
+#' Transforms values of a vector to ranks 
+#' and ranks to z values from a normal distribution
 #' 
 #' @param x a numeric vector 
 #' @param ties_method Method on how to deal with equal values 
-#' during rank transformation. Acceptable input:"max","average","min". This
+#' during rank transformation.Acceptable input:"max","average","min". This
 #' parameter is passed to the parameter \code{ties.method} of 
 #' \code{\link[base]{rank}}.
-#' @return A numeric vector with the results of applying a rank-based inverse
-#' normal transformation to \code{x}.
+#' @return A numeric vector.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
-#' @references Beasley, T Mark, Stephen Erickson, and David B Allison (2009), 
-#' ``Rank-Based Inverse Normal Transformations Are Increasingly Used, but Are
-#'   They Merited?,'' Behavior Genetics 39 (5), 580–95,
-#'   \url{https://doi.org/10.1007/s10519-009-9281-0}.
 #' @examples
 #' 
 #' data("Cleveland",package="modgo")

@@ -15,16 +15,22 @@
 #' parameter \code{ties.method} of \code{\link[base]{rank}}.
 #' @param variables a vector of which variables you want to transform.
 #' Default:colnames(data)
-#' @param bin_variables  a character vector listing the binary variables in 
-#' \code{variables}.
-#' @param categ_variables a character vector listing the ordinal categorical in 
-#' \code{variables}.
+#' @param bin_variables  a character vector listing the binary variables.
+#' @param categ_variables a character vector listing the ordinal categorical 
 #' variables.
 #' @param nrep number of repetitions.
 #' @param noise_mu Logical value if you want to apply noise to  
 #' multivariate mean. Default: FALSE
-#' @param pertr_vec A vector of variables that the user wants to perturb
-#' @param n_samples Number of rows of each simulated dataset. Default is
+#' @param pertr_vec A named vector.Vector's names are the continuous variables
+#' that the user want to perturb. Variance of simulated data set mimic original
+#' data's variance.
+#' @param var_infl A named vector.Vector's names are the continuous variables
+#' that the user want to perturb and increase their variance
+#' @param infl_cov_stable Logical value. If TRUE,perturbation is applied to 
+#' original data set and simulations values mimic the perturbed original data 
+#' set.Covariance matrix used for simulation = original data's correlations.
+#' If FALSE, perturbation is applied to the simulated data sets.
+#' @param n_samples Number of rows of each simulated data set. Default is
 #' the number of rows of \code{data}.
 #' @param change_cov change the covariance of a specific pair of variables.
 #' @param change_amount the amount of change in  the covariance
@@ -76,7 +82,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
                   noise_mu= FALSE, pertr_vec= c(),
                   change_cov= c(),change_amount= 0,seed= 1,
                   thresh_var= c(), thresh_force = FALSE, 
-                  var_prop= c()) {
+                  var_prop= c(),var_infl=c(),infl_cov_stable=FALSE) {
   
   if (!is.na(seed)){
   # Setting Seed
@@ -116,6 +122,11 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   stop("Binary variables are not part of the provided variables")
   
   }
+  if (!all(categ_variables %in% variables)){
+    
+    stop("Categorical variables are not part of the provided variables")
+    
+  }
   if (!all(thresh_var[,1] %in% variables)){
     
     stop("Threshold variables are not part of the provided variables")
@@ -132,11 +143,26 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
   }
   
+  if (length(var_infl) > 0 && !all(names(var_infl) %in% continuous_var) ){
+    
+    stop("Variance inflation variables are not part of the provided 
+         continuous variables")
+    
+  }
+  if (!is.logical(infl_cov_stable)){
+    stop("Inflation variance stable should be TRUE/FALSE")
+  }
+  
+  if(any(names(pertr_vec) %in% names(var_infl))){
+    stop("Perturb vector cannot have common variables with variance inflation vector")  
+  }
+  
   if (change_amount!=0 && length(change_cov)==0){
     
   stop("You need to provide a pair of variables(change_cov) 
        to change their covariance values")
   }
+  
   if (change_amount==0 && length(change_cov)==2){
     
     stop("You need to provide an amount of change (change_amount)")
@@ -202,20 +228,22 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
   subst_list <- vector(mode="list",length = length(categ_var))
   names(subst_list) <- categ_var
+  
   for (cate in categ_var){
     
     unq_values <- sort(unique(data[,cate]))
 
     values = unq_values
     subst_list[[cate]] <- values
-    
+    fake_data <- vector(length = length(data[,cate]))
     
     for (i in c(1:length(unq_values))){
       
-      data[which(data[,cate]==values[i]),cate] <- i
+      fake_data[which(data[,cate]==values[i])] <- i
       
     } 
     
+    data[,cate] <-  fake_data
   }
   
   oldw <- getOption("warn")
@@ -236,13 +264,15 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   for (cate in categ_var){
     
     values <- subst_list[[cate]]
-    for (i in c(length(values):1)) {
+    fake_data <- vector(length = length(data[,cate]))
+    for (i in c(1:length(values))) {
       
-      data[which(data[,cate]==i),cate] <- values[i]
+      fake_data[which(data[,cate]==i)] <- values[i]
       
       
       
     }
+    data[,cate] <-  fake_data
     
   }
   }else {Sigma <- sigma}
@@ -263,6 +293,24 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     print("Covariance matrix is not positive definite.") 
     print("It will be replaced with nearest positive definite matrix")
     Sigma <- Matrix::nearPD(Sigma,corr = TRUE)$mat
+  }
+  
+  ## Inflation analysis - stable covariance matrix
+  if ( length(var_infl) >0 && infl_cov_stable==TRUE){
+    
+   
+    #Inverse transformation of each variable
+    for(j in 1:ncol(data)) {
+      if(colnames(data)[[j]] %in% names(var_infl)){
+        
+        p <- var_infl[which(
+          names(var_infl)==colnames(data)[[j]])]
+        
+        data[[j]] <- data[[j]] + 
+          rnorm(length(data[[j]]),mean = 0,sd=sd(sqrt(p)*data[[j]]))
+        
+      }
+    }
   }
   
   
@@ -354,6 +402,8 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   #Inverse transformation of each variable
   for(j in 1:ncol(df_sim)) {
     df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
+    
+   
     if(colnames(data)[[j]] %in% names(pertr_vec)){
       
       p <- pertr_vec[which(
@@ -361,6 +411,15 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
       
       df_sim[[j]] <- (df_sim[[j]]*sqrt(1-p)) + 
         rnorm(length(df_sim[[j]]),mean = 0,sd=sd(df_sim[[j]])*sqrt(p))
+      
+    }
+    if(colnames(data)[[j]] %in% names(var_infl) && infl_cov_stable == FALSE){
+      
+      p <- var_infl[which(
+        names(var_infl)==colnames(data)[[j]])]
+      
+      df_sim[[j]] <- df_sim[[j]] + 
+       rnorm(length(df_sim[[j]]),mean = 0,sd=sd( sqrt(p)*df_sim[[j]]))
       
     }
   }
@@ -396,7 +455,8 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
   }
   
-  if(length(df_sim[,1]) < n_samples || is.null(df_sim) || apply(df_sim, 2, function(x) any(is.na(x))) ){
+  if(length(df_sim[,1]) < n_samples || is.null(df_sim) || 
+     apply(df_sim, 2, function(x) any(is.na(x))) || any(is.na(suppressWarnings(cor(df_sim)))) ){
     i <- i-1
     counter <-counter +1
   } else {

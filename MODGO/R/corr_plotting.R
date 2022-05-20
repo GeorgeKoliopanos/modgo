@@ -23,7 +23,9 @@
 
 
 corr_plots <- function(Modgo_obj,sim_dataset=1,
-                       variables=colnames(Modgo_obj[["OriginalData"]]),tl.cex=0.5,tl.srt=90,...) {
+                       variables=colnames(Modgo_obj[["OriginalData"]]),
+                       tl.cex=0.5,tl.srt=90,title_pos=5,title_height=0.0,
+                       title_size=0.8,...) {
   
   if (!all(variables %in% colnames(Modgo_obj[["OriginalData"]]))){
     
@@ -32,21 +34,28 @@ corr_plots <- function(Modgo_obj,sim_dataset=1,
   }
   
   opar <- par()
-  par(mfrow = c(1, 4))
+  par(mfrow = c(2, 2))
   cor1 <- cor(as.matrix(Modgo_obj[["OriginalData"]][,variables]))
   cor2 <- cor(as.matrix(Modgo_obj[["SimulatedData"]][[sim_dataset]][,variables]))
   cor3 <- Modgo_obj[["Correlations"]][["Mean"]][variables,variables]
   cor4 <- cor1-cor2
   
   
-  corrplot::corrplot(cor1, title = "\nOriginal",tl.cex = tl.cex,
-                     tl.srt=tl.srt,...)
-  corrplot::corrplot(cor2, title = "\nSimulated",tl.cex = tl.cex,
-                     tl.srt=tl.srt,...)
-  corrplot::corrplot(cor3, title = "\nMean correlation of simulations",
-                     tl.cex = tl.cex,tl.srt=tl.srt,...)
-  corrplot::corrplot(cor4, title = "\nOriginal minus Simulated",tl.cex = tl.cex,
-                     tl.srt=tl.srt,...)
+  corrplot::corrplot(cor1,tl.cex = tl.cex,
+                     tl.srt=tl.srt,tl.col = "black",...)
+  mtext("Original", at=title_pos, line=title_height, cex=title_size)
+  corrplot::corrplot(cor2,tl.cex = tl.cex,
+                     tl.srt=tl.srt,tl.col = "black",...)
+  mtext("Simulated", at=title_pos, line=title_height, cex=title_size)
+  
+  corrplot::corrplot(cor3,
+                     tl.cex = tl.cex,tl.srt=tl.srt,tl.col = "black",...)
+  mtext("Mean correlation of \nsimulations", at=title_pos, line=title_height, cex=title_size)
+  
+  corrplot::corrplot(cor4,tl.cex = tl.cex,
+                     tl.srt=tl.srt,tl.col = "black",...)
+  mtext("Original minus \nsimulated", at=title_pos, line=title_height, cex=title_size)
+  
   par(mfrow = opar[["mfrow"]])
   
   

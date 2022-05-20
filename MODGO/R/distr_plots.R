@@ -22,7 +22,7 @@
 
 distr_plots <- function(Modgo_obj,
                         variables=colnames(Modgo_obj[["OriginalData"]]),
-                        sim_dataset=1,wespalette="Cavalcanti1") {
+                        sim_dataset=1,wespalette="Cavalcanti1",text_size=12) {
   
   if (!all(variables %in% colnames(Modgo_obj[["OriginalData"]]))){
     
@@ -35,20 +35,30 @@ distr_plots <- function(Modgo_obj,
   for (i in variables){
    comb_data <- c(Modgo_obj[["OriginalData"]][[i]],
                        Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])
-    dataset <- c(rep(0,length(Modgo_obj[["OriginalData"]][[i]])),
-                     rep(1,length(Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])))
+    dataset <- c(rep(1,length(Modgo_obj[["OriginalData"]][[i]])),
+                     rep(0,length(Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])))
     df <- as.data.frame(cbind(comb_data,dataset))
     df$dataset <- as.factor(df$dataset)
     if(i %in% Modgo_obj[["Binary_variables"]] || 
        i %in% Modgo_obj[["Categorical_variables"]]){
     p <-ggplot2::ggplot(df,aes(y=dataset)) + 
       geom_bar(aes(fill=as.factor(comb_data))) +
-      scale_y_discrete(labels= c("Original","Simulated")) +
+      scale_y_discrete(labels= c("Simulated","Original")) +
       scale_fill_manual(values = wesanderson::wes_palette(n=length(unique(comb_data)),name=wespalette,type = "continuous")) +
-      theme(panel.background = element_blank(),legend.title = element_blank()) +
+      theme(panel.background = element_blank(),legend.title = element_blank(),
+            axis.text.y = element_text(color="black", size=text_size+2, face="bold"),
+            axis.text.x = element_text(color="black", size=text_size),
+            axis.title.y = element_text(color="black", size=text_size+2, face="bold"),
+            legend.text = element_text(color="black", size=text_size+2,face="bold")) +
       ylab(label=i) +
       xlab(label="")
     } else{
+      comb_data <- c(Modgo_obj[["OriginalData"]][[i]],
+                     Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])
+      dataset <- c(rep(0,length(Modgo_obj[["OriginalData"]][[i]])),
+                   rep(1,length(Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])))
+      df <- as.data.frame(cbind(comb_data,dataset))
+      df$dataset <- as.factor(df$dataset)
      p <-ggplot2::ggplot(df,aes(x=dataset, y=comb_data,color=dataset)) + 
         theme(legend.position = "none") +
         geom_boxplot() +
@@ -57,7 +67,11 @@ distr_plots <- function(Modgo_obj,
         scale_color_manual(values = wesanderson::wes_palette(n=length(unique(dataset)), name=wespalette,type = "continuous")) +
         ylab(label=i) +
         xlab(label="") +
-        theme(panel.background = element_blank(),legend.position = "none")
+        theme(panel.background = element_blank(),legend.position = "none",
+              axis.text.x = element_text(color="black", size=text_size+2, face="bold"),
+              axis.text.y = element_text(color="black", size=text_size),
+              axis.title.y = element_text(color="black", size=text_size+2, face="bold"))
+        
       
     }
      
