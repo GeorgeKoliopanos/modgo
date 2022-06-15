@@ -84,6 +84,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
                   thresh_var= c(), thresh_force = FALSE, 
                   var_prop= c(),var_infl=c(),infl_cov_stable=FALSE) {
   
+ 
   if (!is.na(seed)){
   # Setting Seed
   set.seed(seed)
@@ -95,11 +96,13 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   if (!is.data.frame(data)){
     stop("Data is not a data frame")
   }
-  
+  if (any(is.na(data))){
+    stop("Data set contains NA's")
+  }
   
   if (!all(variables %in% colnames(data))){
   
-  stop("Variables are not column names of data ")
+    stop("Variables are not column names of data ")
   
   }
   
@@ -109,6 +112,11 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     stop("Sigma column and row names and not exactly equal to variable names")
     
   }
+  
+  if (any(is.na(cor(data)))){
+    stop("Correlation of data contains NA's")
+  }
+  
   # Include only selected variables in the original dataset
   data <- data[,variables]
   
@@ -119,14 +127,25 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   }
   if (!all(bin_variables %in% variables)){
   
-  stop("Binary variables are not part of the provided variables")
+    stop("Binary variables are not part of the provided variables")
   
   }
+  
+  for (bin in bin_variables){
+    
+    if(length(which(data_set[,bin] %in% c(0,1)))<length(data_set[,bin])) {
+      
+      stop(paste0("Binary variable",bin,"is neither 0 nor 1"))
+      
+    }
+  }
+  
   if (!all(categ_variables %in% variables)){
     
     stop("Categorical variables are not part of the provided variables")
     
   }
+  
   if (!all(thresh_var[,1] %in% variables)){
     
     stop("Threshold variables are not part of the provided variables")
@@ -150,27 +169,33 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
   }
   if (!is.logical(infl_cov_stable)){
+    
     stop("Inflation variance stable should be TRUE/FALSE")
+    
   }
   
   if(any(names(pertr_vec) %in% names(var_infl))){
+    
     stop("Perturb vector cannot have common variables with variance inflation vector")  
+    
   }
   
   if (change_amount!=0 && length(change_cov)==0){
     
-  stop("You need to provide a pair of variables(change_cov) 
-       to change their covariance values")
+    stop("You need to provide a pair of variables(change_cov) 
+          to change their covariance values")
   }
   
   if (change_amount==0 && length(change_cov)==2){
     
     stop("You need to provide an amount of change (change_amount)")
+    
   }
   
   if (!(length(change_cov) %in% c(0,2))) {
     
     stop("You need to provide two variables")
+    
   }
   # Noise in multivariate distributions centers
   if (noise_mu == TRUE){
@@ -184,29 +209,36 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   }
   
   if (length(var_prop)>0 & !all(names(var_prop) %in% bin_variables)){
+    
     stop("Name of var_prop should be a binary variable")
     
   }
+  
   if (length(var_prop)>0 & (var_prop>1 || var_prop <0)){
-    stop("Variable proportion should be between 0 and 1")
+   
+     stop("Variable proportion should be between 0 and 1")
     
   }
   
   if (length(var_prop)>1 ){
+    
     stop("You cannot set proportion for more than 1 variable")
     
   }
+  
   if (length(var_prop) ==1 & length(thresh_var[,1]) >0 ){
+   
     stop("You cannot set a variable proportion and 
          a variable threshold at the same run ")
     
   }
+  
   OriginalData <- data
   
   # Normal run in case user does not provide a sigma
   if(length(sigma)==0){
     
-  # Rank transofrmation of each column of the data set
+  # Rank transformation of each column of the data set
   df_rbi <- data
   for(j in 1:ncol(df_rbi)) {
     df_rbi[[j]] <- rbi_normal_transform(data[[j]],ties_method = ties_method)
@@ -458,6 +490,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   if(length(df_sim[,1]) < n_samples || is.null(df_sim) || 
      apply(df_sim, 2, function(x) any(is.na(x))) || any(is.na(suppressWarnings(cor(df_sim)))) ){
     i <- i-1
+
     counter <-counter +1
   } else {
     df_sim <- df_sim[c(1:n_samples),]
@@ -470,7 +503,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     mean_corr <- mean_corr + (Correlations[[i]]/nrep)
   }
   
-  if(counter > 10*nrep){
+  if(counter > 100*nrep){
     stop("Could not create simulated datasets with this specific thresholds")
   } 
   
