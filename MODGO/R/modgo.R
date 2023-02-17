@@ -41,10 +41,6 @@
 #' of specified variables
 #' (1st column: variable names, 2nd column: Left thresholds, 
 #' 3rd column: Right thresholds)
-#' @param thresh_right A numeric vector indicating the lower limits of the 
-#' the specified variables
-#' @param thresh_left A numeric vector indicating the upper limits of the 
-#' the specified variables
 #' @param thresh_force A logical value indicating if you want to force threshold
 #' in case the proportion of samples that can surpass the threshold are less 
 #' than 10\%
@@ -52,6 +48,11 @@
 #'  value=1 for a specific binary variable(=name of the vector) that will be
 #'  the proportion of this value in the simulated data sets.[this may increase
 #'  execution time drastically]
+#' @param tol A numeric value that set up 
+#'  tolerance(relative to largest variance) for numerical lack of
+#'  positive-definiteness in Sigma
+#' @param stop_sim A logical value indicating if the analysis should
+#' stop before simulation and produce only the correlation matrix
 #' @return A list with the following components:
 #' \item{SimulatedData}{A list of data frames containing the simulated data.}
 #' \item{OriginalData}{A data frame with the input data.}
@@ -82,7 +83,8 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
                   noise_mu= FALSE, pertr_vec= c(),
                   change_cov= c(),change_amount= 0,seed= 1,
                   thresh_var= c(), thresh_force = FALSE, 
-                  var_prop= c(),var_infl=c(),infl_cov_stable=FALSE) {
+                  var_prop= c(),var_infl=c(),infl_cov_stable=FALSE, 
+                  tol = 1e-06, stop_sim = FALSE) {
   
  
   if (!is.na(seed)){
@@ -113,9 +115,6 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
   }
   
-  if (any(is.na(cor(data)))){
-    stop("Correlation of data contains NA's")
-  }
   
   # Include only selected variables in the original dataset
   data <- data[,variables]
@@ -133,7 +132,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   
   for (bin in bin_variables){
     
-    if(length(which(data_set[,bin] %in% c(0,1)))<length(data_set[,bin])) {
+    if(length(which(data[,bin] %in% c(0,1)))<length(data[,bin])) {
       
       stop(paste0("Binary variable",bin,"is neither 0 nor 1"))
       
@@ -318,14 +317,20 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
  }
   
   
+  pre_sim_sigma <- Sigma
+   # Check Sigma if it is positive definite
+   if(!all(eigen(Sigma)$value > 0)){
+     
+     print("Covariance matrix is not positive definite.") 
+     print("It will be replaced with nearest positive definite matrix")
+     Sigma <- Matrix::nearPD(Sigma,corr = TRUE)$mat
+   }
   
-  # Check Sigma if it is positive definite
-  if(!all(eigen(Sigma)$value > 0)){
-    
-    print("Covariance matrix is not positive definite.") 
-    print("It will be replaced with nearest positive definite matrix")
-    Sigma <- Matrix::nearPD(Sigma,corr = TRUE)$mat
+  # Check Sigma if it contains NA's
+  if (any(is.na(Sigma))){
+    stop("Correlation of data contains NA's")
   }
+  
   
   ## Inflation analysis - stable covariance matrix
   if ( length(var_infl) >0 && infl_cov_stable==TRUE){
@@ -350,7 +355,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   if (length(thresh_var[,1]) >0){
     mt_sim <- MASS::mvrnorm(n = n_samples, 
                             mu = rep(0, ncol(data)) +ns,
-                            Sigma = Sigma)
+                            Sigma = Sigma,tol=tol)
     df_sim <- data.frame(mt_sim)
     names(df_sim) <- names(data)
     #Inverse transformation of each variable
@@ -388,7 +393,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
     mt_sim <- MASS::mvrnorm(n = n_samples, 
                             mu = rep(0, ncol(data)) +ns,
-                            Sigma = Sigma)
+                            Sigma = Sigma,tol=tol)
     df_sim <- data.frame(mt_sim)
     names(df_sim) <- names(data)
     #Inverse transformation of each variable
@@ -421,12 +426,13 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   SimulatedData <- vector(mode = "list", length = nrep)
   i <- 1
   counter <- 0
+if (stop_sim == FALSE){
   # Loop for creating new datasets and obtaining their mean correlations
   while (i < nrep+1){
     
   mt_sim <- MASS::mvrnorm(n = ceiling(n_samples*thresh_multi), 
                           mu = rep(0, ncol(data)) + ns,
-                          Sigma = Sigma)
+                          Sigma = Sigma,tol=tol)
   
   
   df_sim <- data.frame(mt_sim)
@@ -515,11 +521,20 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   names(Correlations) <- c(paste0("rep",seq(1:nrep)),"Mean")
   
   results <-list(SimulatedData,OriginalData,Correlations,
-                 bin_variables,categ_variables,Sigma,seed,n_samples,nrep)
+                 bin_variables,categ_variables,Sigma,seed,n_samples,nrep,
+                 pre_sim_sigma)
   names(results) <-c("SimulatedData","OriginalData","Correlations",
                      "Binary_variables","Categorical_variables",
                      "Covariance_Matrix","Seed","Samples_Produced",
-                     "Sim_Dataset_Number")
+                     "Sim_Dataset_Number","PreSim_Sigma")
+  }else{
+    results <- list(OriginalData,bin_variables,categ_variables,Sigma,
+                    seed,pre_sim_sigma)
+    names(results) <- c("OriginalData","Binary_variables","Categorical_variables",
+                       "Covariance_Matrix","Seed","PreSim_Sigma")
+    
+  }
+  
   return(results)
 }
 

@@ -9,7 +9,6 @@
 #' @return A numeric vector.
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Normal rank transformation
-#' @examples
 #'
 #'@importFrom psych biserial
 #'@importFrom psych polychoric

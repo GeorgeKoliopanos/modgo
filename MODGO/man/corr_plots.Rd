@@ -10,6 +10,9 @@ corr_plots(
   variables = colnames(Modgo_obj[["OriginalData"]]),
   tl.cex = 0.5,
   tl.srt = 90,
+  title_pos = 5,
+  title_height = 0,
+  title_size = 0.8,
   ...
 )
 }
