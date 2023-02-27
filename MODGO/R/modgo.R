@@ -48,11 +48,18 @@
 #'  value=1 for a specific binary variable(=name of the vector) that will be
 #'  the proportion of this value in the simulated data sets.[this may increase
 #'  execution time drastically]
+#'  @param multi_sugg_prop A named vector that provides a  proportion of 
+#'  value=1 for specific binary variables(=name of the vector) that will be
+#'  the close to the proportion of this value in the simulated data sets.
 #' @param tol A numeric value that set up 
 #'  tolerance(relative to largest variance) for numerical lack of
 #'  positive-definiteness in Sigma
 #' @param stop_sim A logical value indicating if the analysis should
 #' stop before simulation and produce only the correlation matrix
+#' @param new_mean_sd A matrix that contains two columns named
+#' "Mean" and "SD" that the user specifies desired Means and Standard Deviations
+#' in the simulated data sets for specific continues variables. The variables
+#' must be declared as ROWNAMES in the matrix
 #' @return A list with the following components:
 #' \item{SimulatedData}{A list of data frames containing the simulated data.}
 #' \item{OriginalData}{A data frame with the input data.}
@@ -77,14 +84,15 @@
 #' @export
 #' @importFrom Matrix nearPD
 
-modgo <- function(data,ties_method=  "max", variables= colnames(data),
-                  bin_variables= c(),categ_variables= c(),
-                  n_samples= nrow(data),sigma= c(),nrep= 100,
-                  noise_mu= FALSE, pertr_vec= c(),
-                  change_cov= c(),change_amount= 0,seed= 1,
-                  thresh_var= c(), thresh_force = FALSE, 
-                  var_prop= c(),var_infl=c(),infl_cov_stable=FALSE, 
-                  tol = 1e-06, stop_sim = FALSE) {
+modgo <- function(data,ties_method =  "max", variables = colnames(data),
+                  bin_variables = c(), categ_variables = c(),
+                  n_samples = nrow(data), sigma = c(), nrep = 100,
+                  noise_mu = FALSE, pertr_vec = c(),
+                  change_cov = c(), change_amount = 0, seed = 1,
+                  thresh_var = c(), thresh_force = FALSE, 
+                  var_prop = c(), var_infl = c(), infl_cov_stable = FALSE, 
+                  tol = 1e-06, stop_sim = FALSE, new_mean_sd = c(),
+                  multi_sugg_prop = c()) {
   
  
   if (!is.na(seed)){
@@ -144,7 +152,24 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     stop("Categorical variables are not part of the provided variables")
     
   }
-  
+  if (!all(rownames(new_mean_sd) %in% variables)){
+    
+    stop("Rownames of new_mean_sd are not part of the provided variable")
+    
+  }
+  if(length(new_mean_sd) != 0){
+    if (!all(colnames(new_mean_sd) %in% c("Mean","SD")) || 
+        dim(new_mean_sd)[2] != 2){
+      
+      stop("Colnames of new_mean_sd are not Mean and SD")
+      
+    }
+  }
+  if (!all(names(multi_sugg_prop) %in% bin_variables)){
+    
+    stop("Names of multi_sugg_prop are not part of the provided binary variables")
+    
+  }
   if (!all(thresh_var[,1] %in% variables)){
     
     stop("Threshold variables are not part of the provided variables")
@@ -439,8 +464,11 @@ if (stop_sim == FALSE){
   names(df_sim) <- names(data)
   #Inverse transformation of each variable
   for(j in 1:ncol(df_sim)) {
-    df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
-    
+    variable <- colnames(df_sim)[[j]]
+    if(colnames(df_sim)[[j]] %in% names(multi_sugg_prop)){
+      df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], 
+                                              rbinom(n = dim(df_sim)[1], 1, prob = multi_sugg_prop[variable]))
+    }else { df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]]) }
    
     if(colnames(data)[[j]] %in% names(pertr_vec)){
       
@@ -500,7 +528,11 @@ if (stop_sim == FALSE){
     counter <-counter +1
   } else {
     df_sim <- df_sim[c(1:n_samples),]
+  for (j in rownames(new_mean_sd)){
     
+    df_sim[[j]] <- ((df_sim[[j]] - mean(OriginalData[[j]])) /  sd(OriginalData[[j]])) * new_mean_sd[j,"SD"] + 
+      new_mean_sd[j,"Mean"]
+  }
     #Correlation calculation
     Correlations[[i]] <- cor(df_sim)
     SimulatedData[[i]] <- df_sim
