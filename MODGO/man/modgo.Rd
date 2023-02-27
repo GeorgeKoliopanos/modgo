@@ -20,7 +20,11 @@ modgo(
   seed = 1,
   thresh_var = c(),
   thresh_force = FALSE,
-  var_prop = c()
+  var_prop = c(),
+  var_infl = c(),
+  infl_cov_stable = FALSE,
+  tol = 1e-06,
+  stop_sim = FALSE
 )
 }
 \arguments{
@@ -35,14 +39,12 @@ parameter \code{ties.method} of \code{\link[base]{rank}}.}
 \item{variables}{a vector of which variables you want to transform.
 Default:colnames(data)}
 
-\item{bin_variables}{a character vector listing the binary variables in 
-\code{variables}.}
+\item{bin_variables}{a character vector listing the binary variables.}
 
-\item{categ_variables}{a character vector listing the ordinal categorical in 
-\code{variables}.
+\item{categ_variables}{a character vector listing the ordinal categorical 
 variables.}
 
-\item{n_samples}{Number of rows of each simulated dataset. Default is
+\item{n_samples}{Number of rows of each simulated data set. Default is
 the number of rows of \code{data}.}
 
 \item{sigma}{a covariance matrix of NxN (N= number of variables) 
@@ -53,7 +55,9 @@ provided by the user to bypass the covariance matrix calculations}
 \item{noise_mu}{Logical value if you want to apply noise to
 multivariate mean. Default: FALSE}
 
-\item{pertr_vec}{A vector of variables that the user wants to perturb}
+\item{pertr_vec}{A named vector.Vector's names are the continuous variables
+that the user want to perturb. Variance of simulated data set mimic original
+data's variance.}
 
 \item{change_cov}{change the covariance of a specific pair of variables.}
 
@@ -77,11 +81,20 @@ value=1 for a specific binary variable(=name of the vector) that will be
 the proportion of this value in the simulated data sets.[this may increase
 execution time drastically]}
 
-\item{thresh_right}{A numeric vector indicating the lower limits of the 
-the specified variables}
+\item{var_infl}{A named vector.Vector's names are the continuous variables
+that the user want to perturb and increase their variance}
 
-\item{thresh_left}{A numeric vector indicating the upper limits of the 
-the specified variables}
+\item{infl_cov_stable}{Logical value. If TRUE,perturbation is applied to 
+original data set and simulations values mimic the perturbed original data 
+set.Covariance matrix used for simulation = original data's correlations.
+If FALSE, perturbation is applied to the simulated data sets.}
+
+\item{tol}{A numeric value that set up 
+tolerance(relative to largest variance) for numerical lack of
+positive-definiteness in Sigma}
+
+\item{stop_sim}{A logical value indicating if the analysis should
+stop before simulation and produce only the correlation matrix}
 }
 \value{
 A list with the following components:

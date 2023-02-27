@@ -13,6 +13,18 @@ data("Cleveland")
 \description{
 Rows: samples (303) x Columns: Variables (11)
 }
+\details{
+Cleveland Clinic Heart Disease Data set from the University of 
+California in Irvine (UCI) machine learning data repository 
+
+Dua, Dheeru, and Casey Graff. 2017. "UCI Machine Learning Repository." 
+University of California, Irvine,School of Information;
+Computer Sciences. http://archive.ics.uci.edu/ml
+
+Selected 11 variables and impute missing values
+Imputation method is described in the Supplementary file 1 of the 
+modgo paper
+}
 \examples{
 data("Cleveland", package="modgo")
 }

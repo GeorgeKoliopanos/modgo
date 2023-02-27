@@ -8,7 +8,8 @@ distr_plots(
   Modgo_obj,
   variables = colnames(Modgo_obj[["OriginalData"]]),
   sim_dataset = 1,
-  wespalette = "Cavalcanti1"
+  wespalette = "Cavalcanti1",
+  text_size = 12
 )
 }
 \arguments{

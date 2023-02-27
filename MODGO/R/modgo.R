@@ -41,10 +41,6 @@
 #' of specified variables
 #' (1st column: variable names, 2nd column: Left thresholds, 
 #' 3rd column: Right thresholds)
-#' @param thresh_right A numeric vector indicating the lower limits of the 
-#' the specified variables
-#' @param thresh_left A numeric vector indicating the upper limits of the 
-#' the specified variables
 #' @param thresh_force A logical value indicating if you want to force threshold
 #' in case the proportion of samples that can surpass the threshold are less 
 #' than 10\%
@@ -52,6 +48,18 @@
 #'  value=1 for a specific binary variable(=name of the vector) that will be
 #'  the proportion of this value in the simulated data sets.[this may increase
 #'  execution time drastically]
+#'  @param multi_sugg_prop A named vector that provides a  proportion of 
+#'  value=1 for specific binary variables(=name of the vector) that will be
+#'  the close to the proportion of this value in the simulated data sets.
+#' @param tol A numeric value that set up 
+#'  tolerance(relative to largest variance) for numerical lack of
+#'  positive-definiteness in Sigma
+#' @param stop_sim A logical value indicating if the analysis should
+#' stop before simulation and produce only the correlation matrix
+#' @param new_mean_sd A matrix that contains two columns named
+#' "Mean" and "SD" that the user specifies desired Means and Standard Deviations
+#' in the simulated data sets for specific continues variables. The variables
+#' must be declared as ROWNAMES in the matrix
 #' @return A list with the following components:
 #' \item{SimulatedData}{A list of data frames containing the simulated data.}
 #' \item{OriginalData}{A data frame with the input data.}
@@ -76,13 +84,15 @@
 #' @export
 #' @importFrom Matrix nearPD
 
-modgo <- function(data,ties_method=  "max", variables= colnames(data),
-                  bin_variables= c(),categ_variables= c(),
-                  n_samples= nrow(data),sigma= c(),nrep= 100,
-                  noise_mu= FALSE, pertr_vec= c(),
-                  change_cov= c(),change_amount= 0,seed= 1,
-                  thresh_var= c(), thresh_force = FALSE, 
-                  var_prop= c(),var_infl=c(),infl_cov_stable=FALSE) {
+modgo <- function(data,ties_method =  "max", variables = colnames(data),
+                  bin_variables = c(), categ_variables = c(),
+                  n_samples = nrow(data), sigma = c(), nrep = 100,
+                  noise_mu = FALSE, pertr_vec = c(),
+                  change_cov = c(), change_amount = 0, seed = 1,
+                  thresh_var = c(), thresh_force = FALSE, 
+                  var_prop = c(), var_infl = c(), infl_cov_stable = FALSE, 
+                  tol = 1e-06, stop_sim = FALSE, new_mean_sd = c(),
+                  multi_sugg_prop = c()) {
   
  
   if (!is.na(seed)){
@@ -113,9 +123,6 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
   }
   
-  if (any(is.na(cor(data)))){
-    stop("Correlation of data contains NA's")
-  }
   
   # Include only selected variables in the original dataset
   data <- data[,variables]
@@ -133,7 +140,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   
   for (bin in bin_variables){
     
-    if(length(which(data_set[,bin] %in% c(0,1)))<length(data_set[,bin])) {
+    if(length(which(data[,bin] %in% c(0,1)))<length(data[,bin])) {
       
       stop(paste0("Binary variable",bin,"is neither 0 nor 1"))
       
@@ -145,7 +152,24 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     stop("Categorical variables are not part of the provided variables")
     
   }
-  
+  if (!all(rownames(new_mean_sd) %in% variables)){
+    
+    stop("Rownames of new_mean_sd are not part of the provided variable")
+    
+  }
+  if(length(new_mean_sd) != 0){
+    if (!all(colnames(new_mean_sd) %in% c("Mean","SD")) || 
+        dim(new_mean_sd)[2] != 2){
+      
+      stop("Colnames of new_mean_sd are not Mean and SD")
+      
+    }
+  }
+  if (!all(names(multi_sugg_prop) %in% bin_variables)){
+    
+    stop("Names of multi_sugg_prop are not part of the provided binary variables")
+    
+  }
   if (!all(thresh_var[,1] %in% variables)){
     
     stop("Threshold variables are not part of the provided variables")
@@ -318,14 +342,20 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
  }
   
   
+  pre_sim_sigma <- Sigma
+   # Check Sigma if it is positive definite
+   if(!all(eigen(Sigma)$value > 0)){
+     
+     print("Covariance matrix is not positive definite.") 
+     print("It will be replaced with nearest positive definite matrix")
+     Sigma <- Matrix::nearPD(Sigma,corr = TRUE)$mat
+   }
   
-  # Check Sigma if it is positive definite
-  if(!all(eigen(Sigma)$value > 0)){
-    
-    print("Covariance matrix is not positive definite.") 
-    print("It will be replaced with nearest positive definite matrix")
-    Sigma <- Matrix::nearPD(Sigma,corr = TRUE)$mat
+  # Check Sigma if it contains NA's
+  if (any(is.na(Sigma))){
+    stop("Correlation of data contains NA's")
   }
+  
   
   ## Inflation analysis - stable covariance matrix
   if ( length(var_infl) >0 && infl_cov_stable==TRUE){
@@ -350,7 +380,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   if (length(thresh_var[,1]) >0){
     mt_sim <- MASS::mvrnorm(n = n_samples, 
                             mu = rep(0, ncol(data)) +ns,
-                            Sigma = Sigma)
+                            Sigma = Sigma,tol=tol)
     df_sim <- data.frame(mt_sim)
     names(df_sim) <- names(data)
     #Inverse transformation of each variable
@@ -388,7 +418,7 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     
     mt_sim <- MASS::mvrnorm(n = n_samples, 
                             mu = rep(0, ncol(data)) +ns,
-                            Sigma = Sigma)
+                            Sigma = Sigma,tol=tol)
     df_sim <- data.frame(mt_sim)
     names(df_sim) <- names(data)
     #Inverse transformation of each variable
@@ -421,20 +451,24 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   SimulatedData <- vector(mode = "list", length = nrep)
   i <- 1
   counter <- 0
+if (stop_sim == FALSE){
   # Loop for creating new datasets and obtaining their mean correlations
   while (i < nrep+1){
     
   mt_sim <- MASS::mvrnorm(n = ceiling(n_samples*thresh_multi), 
                           mu = rep(0, ncol(data)) + ns,
-                          Sigma = Sigma)
+                          Sigma = Sigma,tol=tol)
   
   
   df_sim <- data.frame(mt_sim)
   names(df_sim) <- names(data)
   #Inverse transformation of each variable
   for(j in 1:ncol(df_sim)) {
-    df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
-    
+    variable <- colnames(df_sim)[[j]]
+    if(colnames(df_sim)[[j]] %in% names(multi_sugg_prop)){
+      df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], 
+                                              rbinom(n = dim(df_sim)[1], 1, prob = multi_sugg_prop[variable]))
+    }else { df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]]) }
    
     if(colnames(data)[[j]] %in% names(pertr_vec)){
       
@@ -494,7 +528,11 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
     counter <-counter +1
   } else {
     df_sim <- df_sim[c(1:n_samples),]
+  for (j in rownames(new_mean_sd)){
     
+    df_sim[[j]] <- ((df_sim[[j]] - mean(OriginalData[[j]])) /  sd(OriginalData[[j]])) * new_mean_sd[j,"SD"] + 
+      new_mean_sd[j,"Mean"]
+  }
     #Correlation calculation
     Correlations[[i]] <- cor(df_sim)
     SimulatedData[[i]] <- df_sim
@@ -515,11 +553,20 @@ modgo <- function(data,ties_method=  "max", variables= colnames(data),
   names(Correlations) <- c(paste0("rep",seq(1:nrep)),"Mean")
   
   results <-list(SimulatedData,OriginalData,Correlations,
-                 bin_variables,categ_variables,Sigma,seed,n_samples,nrep)
+                 bin_variables,categ_variables,Sigma,seed,n_samples,nrep,
+                 pre_sim_sigma)
   names(results) <-c("SimulatedData","OriginalData","Correlations",
                      "Binary_variables","Categorical_variables",
                      "Covariance_Matrix","Seed","Samples_Produced",
-                     "Sim_Dataset_Number")
+                     "Sim_Dataset_Number","PreSim_Sigma")
+  }else{
+    results <- list(OriginalData,bin_variables,categ_variables,Sigma,
+                    seed,pre_sim_sigma)
+    names(results) <- c("OriginalData","Binary_variables","Categorical_variables",
+                       "Covariance_Matrix","Seed","PreSim_Sigma")
+    
+  }
+  
   return(results)
 }
 
