@@ -18,6 +18,10 @@
 #' @param bin_variables  a character vector listing the binary variables.
 #' @param categ_variables a character vector listing the ordinal categorical 
 #' variables.
+#' @param count_variables a character vector listing the count as a sub
+#'  sub category of categorical variables. Count variables should be part
+#'  of categorical variables vector. Count variables are treated differently
+#'  when using gldex to simulate them.
 #' @param nrep number of repetitions.
 #' @param noise_mu Logical value if you want to apply noise to  
 #' multivariate mean. Default: FALSE
@@ -56,6 +60,10 @@
 #'  positive-definiteness in Sigma
 #' @param stop_sim A logical value indicating if the analysis should
 #' stop before simulation and produce only the correlation matrix
+#' @param gldex  vector indicating the which variables should
+#' be simulated using generalized lambda distribution
+#' @param gp_poisson A vector indicating the which variables should
+#' be simulated using generalized poisson distribution 
 #' @param new_mean_sd A matrix that contains two columns named
 #' "Mean" and "SD" that the user specifies desired Means and Standard Deviations
 #' in the simulated data sets for specific continues variables. The variables
@@ -86,13 +94,13 @@
 
 modgo <- function(data,ties_method =  "max", variables = colnames(data),
                   bin_variables = c(), categ_variables = c(),
-                  n_samples = nrow(data), sigma = c(), nrep = 100,
-                  noise_mu = FALSE, pertr_vec = c(),
+                  count_variables =c(), n_samples = nrow(data),
+                  sigma = c(), nrep = 100, noise_mu = FALSE, pertr_vec = c(),
                   change_cov = c(), change_amount = 0, seed = 1,
                   thresh_var = c(), thresh_force = FALSE, 
                   var_prop = c(), var_infl = c(), infl_cov_stable = FALSE, 
                   tol = 1e-06, stop_sim = FALSE, new_mean_sd = c(),
-                  multi_sugg_prop = c()) {
+                  multi_sugg_prop = c(), gldex = c(), gp_poisson = c()) {
   
  
   if (!is.na(seed)){
@@ -115,7 +123,48 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     stop("Variables are not column names of data ")
   
   }
+  if (!all(bin_variables %in% variables)){
+    
+    stop("Binary variables are not part of the provided variables")
+    
+  }
   
+  for (bin in bin_variables){
+    
+    if(length(which(data[,bin] %in% c(0,1))) < length(data[,bin])) {
+      
+      stop(paste0("Binary variable",bin,"is neither 0 nor 1"))
+      
+    }
+  }
+  if (!all(categ_variables %in% variables)){
+    
+    stop("Categorical variables are not part of the provided variables")
+    
+  }
+  if (!all(count_variables %in% categ_variables)){
+    
+    stop("Count variables are not part of the categorical variables")
+    
+  }
+  # Find the continuous variables
+  continuous_var <- setdiff(variables,c(bin_variables,categ_variables))
+  
+  if (!(is.vector(gldex) || length(gldex) == 0)){
+    stop("gldex should be a vector")
+  }
+  if (!all(gldex %in% c(continuous_var,categ_variables))){
+    stop("gldex should be either in categorical or continuous variables")
+  }
+  if (!(is.vector(gp_poisson) || length(gp_poisson) == 0)){
+    stop("gp_poisson should be a vector")
+  }
+  if (any(gp_poisson %in% gldex)){
+    stop("gp_poisson should not be in gldex variables")
+  }
+  if (!all(gp_poisson %in% categ_variables)){
+    stop("gp_poisson should be in categorical variables")
+  }
   if (length(sigma)>0 & (colnames(sigma)!= variables || 
                          rownames(sigma)!= variables)){
     
@@ -132,26 +181,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     stop("Data should only contain numerical values")
     
   }
-  if (!all(bin_variables %in% variables)){
   
-    stop("Binary variables are not part of the provided variables")
-  
-  }
-  
-  for (bin in bin_variables){
-    
-    if(length(which(data[,bin] %in% c(0,1)))<length(data[,bin])) {
-      
-      stop(paste0("Binary variable",bin,"is neither 0 nor 1"))
-      
-    }
-  }
-  
-  if (!all(categ_variables %in% variables)){
-    
-    stop("Categorical variables are not part of the provided variables")
-    
-  }
   if (!all(rownames(new_mean_sd) %in% variables)){
     
     stop("Rownames of new_mean_sd are not part of the provided variable")
@@ -176,8 +206,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
   }
   
-  # Find the continuous variables
-  continuous_var <- setdiff(variables,c(bin_variables,categ_variables))
+  
   
   if (length(pertr_vec) > 0 && !all(names(pertr_vec) %in% continuous_var) ){
     
@@ -256,7 +285,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
          a variable threshold at the same run ")
     
   }
-  
+
   OriginalData <- data
   
   # Normal run in case user does not provide a sigma
@@ -307,11 +336,11 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   options(warn = -1)
   
   
-  Sigma <- suppressMessages(Sigma_transformation(
+  Sigma <- suppressWarnings(suppressMessages(Sigma_transformation(
     data=data,data_z = df_rbi,Sigma,
     variables = variables,
     bin_variables = bin_variables,
-    categ_variables=categ_var))
+    categ_variables=categ_var)))
  
   options(warn = oldw)
  
@@ -384,11 +413,23 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     df_sim <- data.frame(mt_sim)
     names(df_sim) <- names(data)
     #Inverse transformation of each variable
+    
     for(j in 1:ncol(df_sim)) {
+      variable <- colnames(df_sim)[j]
+      if (!(variable %in% gldex)){
       df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
       
+    }else if(variable %in% gldex){
+      df_sim[[j]] <- gldex_transform_inv(df_sim[[j]], data[[j]])
+      if(variable %in% categ_variables){
+        df_sim[[j]] <- round(df_sim[[j]])
+        if (!(variable %in% count_variables)){
+          df_sim[[j]][df_sim[[j]] > max(data[[j]])] <- max(data[[j]])
+          df_sim[[j]][df_sim[[j]] < min(data[[j]])] <- min(data[[j]])
+        }
+      }
     }
-    
+  }
     for (i in c(1:length(thresh_var[,1]))){
       if(is.na(thresh_var[i,2]))
       {low_thresh <-
@@ -422,10 +463,23 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     df_sim <- data.frame(mt_sim)
     names(df_sim) <- names(data)
     #Inverse transformation of each variable
-    for(j in 1:ncol(df_sim)) {
-      df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
-      
-    }
+    
+      for(j in 1:ncol(df_sim)) {
+        variable <- colnames(df_sim)[j]
+        if (!(variable %in% gldex)){
+          df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
+        
+        
+      }else if(variable %in% gldex){
+        df_sim[[j]] <- gldex_transform_inv(df_sim[[j]], data[[j]])
+        if(variable %in% categ_variables){
+          df_sim[[j]] <- round(df_sim[[j]])
+          if (!(variable %in% count_variables)){
+            df_sim[[j]][df_sim[[j]] > max(data[[j]])] <- max(data[[j]])
+            df_sim[[j]][df_sim[[j]] < min(data[[j]])] <- min(data[[j]])
+          }
+        }
+      }}
     
     counts_1 <- length(which(df_sim[,names(var_prop)]==1))
     counts_0 <- length(which(df_sim[,names(var_prop)]==0))
@@ -466,10 +520,37 @@ if (stop_sim == FALSE){
   for(j in 1:ncol(df_sim)) {
     variable <- colnames(df_sim)[[j]]
     if(colnames(df_sim)[[j]] %in% names(multi_sugg_prop)){
+      if (!(variable %in% gldex)){
       df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], 
                                               rbinom(n = dim(df_sim)[1], 1, prob = multi_sugg_prop[variable]))
-    }else { df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]]) }
-   
+      }else if(variable %in% gldex){
+        df_sim[[j]] <- gldex_transform_inv(df_sim[[j]], 
+                                                rbinom(n = dim(df_sim)[1], 1, prob = multi_sugg_prop[variable]))
+        if(variable %in% categ_variables){
+          df_sim[[j]] <- round(df_sim[[j]])
+          if (!(variable %in% count_variables)){
+            df_sim[[j]][df_sim[[j]] > max(data[[j]])] <- max(data[[j]])
+            df_sim[[j]][df_sim[[j]] < min(data[[j]])] <- min(data[[j]])
+          }
+        }
+        }
+    }else { 
+      if (!(variable %in% gldex)){
+        if (variable %in% gp_poisson){
+          df_sim[[j]] <- poisson_transform_inv(df_sim[[j]], data[[j]])
+        }else { 
+          df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]]) 
+          }}else if(variable %in% gldex){
+          df_sim[[j]] <- gldex_transform_inv(df_sim[[j]], data[[j]])
+          if(variable %in% categ_variables){
+            df_sim[[j]] <- round(df_sim[[j]])
+            if (!(variable %in% count_variables)){
+              df_sim[[j]][df_sim[[j]] > max(data[[j]])] <- max(data[[j]])
+              df_sim[[j]][df_sim[[j]] < min(data[[j]])] <- min(data[[j]])
+            }
+          }
+        }
+    }
     if(colnames(data)[[j]] %in% names(pertr_vec)){
       
       p <- pertr_vec[which(

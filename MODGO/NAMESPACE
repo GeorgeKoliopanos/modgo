@@ -2,8 +2,10 @@
 
 export(corr_plots)
 export(distr_plots)
+export(gldex_transform_inv)
 export(modgo)
 export(multicenter_comb)
+export(poisson_transform_inv)
 export(rbi_normal_transform)
 export(rbi_normal_transform_inv)
 import(ggplot2)

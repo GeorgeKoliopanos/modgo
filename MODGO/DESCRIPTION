@@ -8,3 +8,4 @@ Description: Generation of mock data from a real dataset using rank normal inver
 Author: Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos 
 Encoding: UTF-8
 RoxygenNote: 7.2.3
+Licence: GPL-2(example)

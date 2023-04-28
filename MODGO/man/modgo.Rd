@@ -10,6 +10,7 @@ modgo(
   variables = colnames(data),
   bin_variables = c(),
   categ_variables = c(),
+  count_variables = c(),
   n_samples = nrow(data),
   sigma = c(),
   nrep = 100,
@@ -24,7 +25,11 @@ modgo(
   var_infl = c(),
   infl_cov_stable = FALSE,
   tol = 1e-06,
-  stop_sim = FALSE
+  stop_sim = FALSE,
+  new_mean_sd = c(),
+  multi_sugg_prop = c(),
+  gldex = c(),
+  gp_poisson = c()
 )
 }
 \arguments{
@@ -43,6 +48,11 @@ Default:colnames(data)}
 
 \item{categ_variables}{a character vector listing the ordinal categorical 
 variables.}
+
+\item{count_variables}{a character vector listing the count as a sub
+sub category of categorical variables. Count variables should be part
+of categorical variables vector. Count variables are treated differently
+when using gldex to simulate them.}
 
 \item{n_samples}{Number of rows of each simulated data set. Default is
 the number of rows of \code{data}.}
@@ -79,7 +89,10 @@ than 10\%}
 \item{var_prop}{A named vector that provides a  proportion of 
 value=1 for a specific binary variable(=name of the vector) that will be
 the proportion of this value in the simulated data sets.[this may increase
-execution time drastically]}
+execution time drastically]
+@param multi_sugg_prop A named vector that provides a  proportion of 
+value=1 for specific binary variables(=name of the vector) that will be
+the close to the proportion of this value in the simulated data sets.}
 
 \item{var_infl}{A named vector.Vector's names are the continuous variables
 that the user want to perturb and increase their variance}
@@ -95,6 +108,17 @@ positive-definiteness in Sigma}
 
 \item{stop_sim}{A logical value indicating if the analysis should
 stop before simulation and produce only the correlation matrix}
+
+\item{new_mean_sd}{A matrix that contains two columns named
+"Mean" and "SD" that the user specifies desired Means and Standard Deviations
+in the simulated data sets for specific continues variables. The variables
+must be declared as ROWNAMES in the matrix}
+
+\item{gldex}{vector indicating the which variables should
+be simulated using generalized lambda distribution}
+
+\item{gp_poisson}{A vector indicating the which variables should
+be simulated using generalized poisson distribution}
 }
 \value{
 A list with the following components:
