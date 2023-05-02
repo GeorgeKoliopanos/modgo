@@ -2,14 +2,14 @@
 % Please edit documentation in R/inverse_transformation.R
 \name{rbi_normal_transform_inv}
 \alias{rbi_normal_transform_inv}
-\title{Inverse rank transformation}
+\title{Inverse of rank based inverse normal transformation}
 \usage{
 rbi_normal_transform_inv(x, x_original)
 }
 \arguments{
-\item{x}{a vector of z values}
+\item{x}{a numeric vector of z values}
 
-\item{x_original}{a data frame or matrix of the original dataset}
+\item{x_original}{a numeric vector from the original dataset}
 }
 \value{
 A numeric vector.

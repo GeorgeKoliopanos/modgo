@@ -138,16 +138,25 @@ from a multivariate normal distribution.}
 }
 \description{
 \code{modgo} Create mock dataset from a real one by using 
-ranked inverse normal transformation.
+ranked based inverse normal transformation. Data with perturbed 
+characteristics can be generated.
 }
 \details{
-[We can add more details here, once the paper is almost finished]
+Simulated data is generated based on available data. The simulated data
+mimics the characteristics of the original data. The algorithm used is
+based on the ranked based inverse normal transformation (Koliopanos et 
+al. (2023)).
 }
 \examples{
 data("Cleveland",package="modgo")
 test_modgo <- modgo(data = Cleveland,
      bin_variables = c("CAD","HighFastBloodSugar","Sex","ExInducedAngina"),
      categ_variables =c("Chestpaintype"))
+}
+\references{
+Koliopanos, G. and Ojeda, F. and Ziegler Andreas (2023),
+``A simple-to-use R package for mimicking study data by simulations,'' 
+\emph{Methods Inf Med}.
 }
 \author{
 Francisco M. Ojeda, George Koliopanos

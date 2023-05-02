@@ -1,10 +1,10 @@
-#' Inverse rank transformation
+#' Inverse of rank based inverse normal transformation
 #' 
 #' Inverse transforms z values of a vector to simulated values driven by
 #' the original dataset using Cumulative Distribution Function
 #' 
-#' @param x a vector of z values 
-#' @param x_original a data frame or matrix of the original dataset
+#' @param x a numeric vector of z values 
+#' @param x_original a numeric vector from the original dataset
 #' @return A numeric vector.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
