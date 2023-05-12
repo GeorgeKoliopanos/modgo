@@ -28,8 +28,8 @@ modgo(
   stop_sim = FALSE,
   new_mean_sd = c(),
   multi_sugg_prop = c(),
-  gldex = c(),
-  gp_poisson = c()
+  gener_var = c(),
+  gener_var_model = c()
 )
 }
 \arguments{
@@ -89,10 +89,7 @@ than 10\%}
 \item{var_prop}{A named vector that provides a  proportion of 
 value=1 for a specific binary variable(=name of the vector) that will be
 the proportion of this value in the simulated data sets.[this may increase
-execution time drastically]
-@param multi_sugg_prop A named vector that provides a  proportion of 
-value=1 for specific binary variables(=name of the vector) that will be
-the close to the proportion of this value in the simulated data sets.}
+execution time drastically]}
 
 \item{var_infl}{A named vector.Vector's names are the continuous variables
 that the user want to perturb and increase their variance}
@@ -114,11 +111,20 @@ stop before simulation and produce only the correlation matrix}
 in the simulated data sets for specific continues variables. The variables
 must be declared as ROWNAMES in the matrix}
 
-\item{gldex}{vector indicating the which variables should
+\item{multi_sugg_prop}{A named vector that provides a  proportion of 
+value=1 for specific binary variables(=name of the vector) that will be
+the close to the proportion of this value in the simulated data sets.}
+
+\item{gener_var}{A vector indicating the which variables should
 be simulated using generalized lambda distribution}
 
-\item{gp_poisson}{A vector indicating the which variables should
-be simulated using generalized poisson distribution}
+\item{gener_var_model}{A matrix that contains two columns named "Variable" and
+"Model". This matrix can be used only if a gener_var_model argument is 
+provided. It specifies what model should be used for each Variable. 
+Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
+e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
+The user can select Generalised Poisson model for poisson variabes,
+but this model cannot be included in bimodal simulation.}
 }
 \value{
 A list with the following components:

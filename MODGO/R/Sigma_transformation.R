@@ -14,6 +14,7 @@
 #'@importFrom psych polychoric
 #'@importFrom psych tetrachoric
 #'@importFrom psych polyserial
+#' @export
 
 Sigma_transformation <- function(data,data_z,Sigma,variables,
                                  bin_variables=c(),categ_variables=c()) {

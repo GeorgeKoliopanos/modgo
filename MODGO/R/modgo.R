@@ -56,7 +56,7 @@
 #'  value=1 for a specific binary variable(=name of the vector) that will be
 #'  the proportion of this value in the simulated data sets.[this may increase
 #'  execution time drastically]
-#'  @param multi_sugg_prop A named vector that provides a  proportion of 
+#' @param multi_sugg_prop A named vector that provides a  proportion of 
 #'  value=1 for specific binary variables(=name of the vector) that will be
 #'  the close to the proportion of this value in the simulated data sets.
 #' @param tol A numeric value that set up 
@@ -64,10 +64,15 @@
 #'  positive-definiteness in Sigma
 #' @param stop_sim A logical value indicating if the analysis should
 #' stop before simulation and produce only the correlation matrix
-#' @param gldex  vector indicating the which variables should
+#' @param gener_var A vector indicating the which variables should
 #' be simulated using generalized lambda distribution
-#' @param gp_poisson A vector indicating the which variables should
-#' be simulated using generalized poisson distribution 
+#' @param gener_var_model A matrix that contains two columns named "Variable" and
+#' "Model". This matrix can be used only if a gener_var_model argument is 
+#' provided. It specifies what model should be used for each Variable. 
+#' Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
+#' e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
+#' The user can select Generalised Poisson model for poisson variabes,
+#' but this model cannot be included in bimodal simulation.
 #' @param new_mean_sd A matrix that contains two columns named
 #' "Mean" and "SD" that the user specifies desired Means and Standard Deviations
 #' in the simulated data sets for specific continues variables. The variables
@@ -107,7 +112,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
                   thresh_var = c(), thresh_force = FALSE, 
                   var_prop = c(), var_infl = c(), infl_cov_stable = FALSE, 
                   tol = 1e-06, stop_sim = FALSE, new_mean_sd = c(),
-                  multi_sugg_prop = c(), gldex = c(), gp_poisson = c()) {
+                  multi_sugg_prop = c(), gener_var = c(), gener_var_model = c()) {
   
  
   if (!is.na(seed)){
@@ -157,21 +162,37 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   # Find the continuous variables
   continuous_var <- setdiff(variables,c(bin_variables,categ_variables))
   
-  if (!(is.vector(gldex) || length(gldex) == 0)){
-    stop("gldex should be a vector")
+  if (!(is.vector(gener_var) || length(gener_var) == 0)){
+    stop("gener_var should be a vector")
   }
-  if (!all(gldex %in% c(continuous_var,categ_variables))){
-    stop("gldex should be either in categorical or continuous variables")
+  
+  if (!all(gener_var %in% c(continuous_var,categ_variables))){
+    stop("gener_var should be either in categorical or continuous variables")
   }
-  if (!(is.vector(gp_poisson) || length(gp_poisson) == 0)){
-    stop("gp_poisson should be a vector")
+  if ((!is.matrix(gener_var_model) && length(gener_var_model) != 0)){
+    stop("gener_var_model should be a matrix")
   }
-  if (any(gp_poisson %in% gldex)){
-    stop("gp_poisson should not be in gldex variables")
+  if ((!all(colnames(gener_var_model) %in% c("Variables", "Model")) 
+       && length(gener_var_model) != 0)){
+    stop("gener_var_model colnames should be Variables and Model")
   }
-  if (!all(gp_poisson %in% categ_variables)){
-    stop("gp_poisson should be in categorical variables")
+  if (!all(gener_var_model[,"Variables"] %in% gener_var)){
+    stop("gener_var_model Variables should be a part of gener_var")
   }
+  methods <- c("rmfmkl","rprs","star")
+  methods <- c(methods,
+               apply(expand.grid(methods, methods), 1, paste, collapse="-"))
+  methods <- c(methods,"gp")
+  if (!all(gener_var_model[,"Model"] %in% methods)){
+    stop(paste0("All gener_var_model Model should be part of "),
+         paste(methods,collapse = ", "))
+  }
+  if (length(unique(gener_var_model[,"Variables"])) != dim(gener_var_model)[1] &&
+      length(gener_var_model) != 0){
+    stop("gener_var_model Variables contains either duplicate variable or blank value")
+  }
+  
+ 
   if (length(sigma)>0 & (colnames(sigma)!= variables || 
                          rownames(sigma)!= variables)){
     
@@ -411,7 +432,51 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     }
   }
   
-  
+  # Prepare gener_var four moments
+  gener_var_lmbds <- matrix(nrow = 11, ncol = length(gener_var))
+  colnames(gener_var_lmbds) <- gener_var
+  for (i in gener_var){
+    if (i %in% gener_var_model[,"Variables"]){
+      
+      model <- unlist(strsplit(
+        gener_var_model[which(gener_var_model[,"Variables"] == i), 
+                                    "Model"],
+                        split = "-"))
+      if(length(model) == 2){
+        gener_var_lmbds[1:9,i]<- GLDEX::fun.auto.bimodal.ml(dataset[[i]],
+                                    init1.sel=model[1],
+                                    init2.sel=model[2],
+                                    init1=c(-0.25,1.5),
+                                    init2=c(-0.25,1.5),
+                                    leap1=3,leap2=3)$par
+        
+        # Capture information about the bimodel simulation
+        model_1 <- if(model[1] %in% c("rmfmkl","star")){1}else{2}
+        model_2 <- if(model[2] %in% c("rmfmkl","star")){1}else{2}
+        gener_var_lmbds[10:11,i]  <- c(model_1,model_2)
+      }
+      else if(model == "rmfmkl"){
+        gener_var_lmbds[1:4,i] <- GLDEX::fun.RMFMKL.ml(data[[i]])
+        gener_var_lmbds[5,i] <- 1
+      }
+      else if(model == "rprs"){
+        gener_var_lmbds[1:4,i] <- GLDEX::fun.RPRS.ml(data[[i]])
+        gener_var_lmbds[5,i] <- 2
+      }
+      else if(model == "star"){
+        gener_var_lmbds[1:4,i] <- GLDEX::starship(data[[i]])$lambda
+        gener_var_lmbds[5,i] <- 1
+      }
+      else if(model == "gp"){
+        gener_var_lmbds[1:2,i] <- gp::gp.mle(data[[i]])[c("theta","lambda")]
+      }
+      
+    }else{
+      gener_var_lmbds[1:4,i] <- GLDEX::fun.RMFMKL.ml(data[[i]])
+      gener_var_lmbds[5,i] <- 1
+    } 
+    
+  }
   ## Thresholds
   if (length(thresh_var[,1]) >0){
     mt_sim <- MASS::mvrnorm(n = n_samples, 
@@ -423,17 +488,30 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
     for(j in 1:ncol(df_sim)) {
       variable <- colnames(df_sim)[j]
-      if (!(variable %in% gldex)){
+      
+      if (!(variable %in% gener_var)){
       df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
       
-    }else if(variable %in% gldex){
-      df_sim[[j]] <- gldex_transform_inv(df_sim[[j]], data[[j]])
+    }else if(variable %in% gener_var){
+      df_sim[[j]] <- general_transform_inv(df_sim[[j]],
+                                         data[[j]],
+                                         gener_var_lmbds[,variable])
       if(variable %in% categ_variables){
-        df_sim[[j]] <- round(df_sim[[j]])
         if (!(variable %in% count_variables)){
+          df_sim[[j]] <- round(df_sim[[j]])
           df_sim[[j]][df_sim[[j]] > max(data[[j]])] <- max(data[[j]])
           df_sim[[j]][df_sim[[j]] < min(data[[j]])] <- min(data[[j]])
+        }else{
+          print(gener_var_lmbds[1,variable])
+          if(gener_var_lmbds[1,variable] >= 10){
+            df_sim[[j]] <- round(df_sim[[j]])
+            df_sim[[j]][df_sim[[j]] < 0] <- 0
+          }else{
+            df_sim[[j]] <- floor(df_sim[[j]])
+            df_sim[[j]][df_sim[[j]] < 0] <- 0
+          }
         }
+        
       }
     }
   }
@@ -473,17 +551,26 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
       for(j in 1:ncol(df_sim)) {
         variable <- colnames(df_sim)[j]
-        if (!(variable %in% gldex)){
+        if (!(variable %in% gener_var)){
           df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
         
         
-      }else if(variable %in% gldex){
-        df_sim[[j]] <- gldex_transform_inv(df_sim[[j]], data[[j]])
+      }else if(variable %in% gener_var){
+        df_sim[[j]] <- general_transform_inv(df_sim[[j]],
+                                           data[[j]],
+                                           gener_var_lmbds[,variable])
         if(variable %in% categ_variables){
-          df_sim[[j]] <- round(df_sim[[j]])
           if (!(variable %in% count_variables)){
+            df_sim[[j]] <- round(df_sim[[j]])
             df_sim[[j]][df_sim[[j]] > max(data[[j]])] <- max(data[[j]])
             df_sim[[j]][df_sim[[j]] < min(data[[j]])] <- min(data[[j]])
+          }else{
+            if(gener_var_lmbds[1,variable] >= 10){
+              df_sim[[j]] <- round(df_sim[[j]])
+            }else{
+              df_sim[[j]] <- floor(df_sim[[j]])
+              df_sim[[j]][df_sim[[j]] < 0] <- 0
+            }
           }
         }
       }}
@@ -527,33 +614,33 @@ if (stop_sim == FALSE){
   for(j in 1:ncol(df_sim)) {
     variable <- colnames(df_sim)[[j]]
     if(colnames(df_sim)[[j]] %in% names(multi_sugg_prop)){
-      if (!(variable %in% gldex)){
+      
       df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], 
-                                              rbinom(n = dim(df_sim)[1], 1, prob = multi_sugg_prop[variable]))
-      }else if(variable %in% gldex){
-        df_sim[[j]] <- gldex_transform_inv(df_sim[[j]], 
-                                                rbinom(n = dim(df_sim)[1], 1, prob = multi_sugg_prop[variable]))
-        if(variable %in% categ_variables){
-          df_sim[[j]] <- round(df_sim[[j]])
-          if (!(variable %in% count_variables)){
-            df_sim[[j]][df_sim[[j]] > max(data[[j]])] <- max(data[[j]])
-            df_sim[[j]][df_sim[[j]] < min(data[[j]])] <- min(data[[j]])
-          }
-        }
-        }
+                                              rbinom(n = dim(df_sim)[1], 
+                                              1, 
+                                              prob = multi_sugg_prop[variable]))
     }else { 
-      if (!(variable %in% gldex)){
-        if (variable %in% gp_poisson){
-          df_sim[[j]] <- poisson_transform_inv(df_sim[[j]], data[[j]])
-        }else { 
-          df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]]) 
-          }}else if(variable %in% gldex){
-          df_sim[[j]] <- gldex_transform_inv(df_sim[[j]], data[[j]])
+      if (!(variable %in% gener_var)){
+          df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]],
+                                                  data[[j]]) 
+          }else if(variable %in% gener_var){
+            df_sim[[j]] <- general_transform_inv(df_sim[[j]],
+                                             data[[j]],
+                                             gener_var_lmbds[,variable])
           if(variable %in% categ_variables){
-            df_sim[[j]] <- round(df_sim[[j]])
             if (!(variable %in% count_variables)){
+              df_sim[[j]] <- round(df_sim[[j]])
               df_sim[[j]][df_sim[[j]] > max(data[[j]])] <- max(data[[j]])
               df_sim[[j]][df_sim[[j]] < min(data[[j]])] <- min(data[[j]])
+            }else{
+              print(gener_var_lmbds[1,variable])
+              if(gener_var_lmbds[1,variable] >= 10){
+                df_sim[[j]] <- round(df_sim[[j]])
+                df_sim[[j]][df_sim[[j]] < 0] <- 0
+              }else{
+                df_sim[[j]] <- floor(df_sim[[j]])
+                df_sim[[j]][df_sim[[j]] < 0] <- 0
+              }
             }
           }
         }
@@ -595,6 +682,7 @@ if (stop_sim == FALSE){
   
   }
   #Proportion process
+  
   if(length(var_prop)==1){
 
       rounded_length <- ceiling(n_samples*var_prop)
@@ -603,12 +691,7 @@ if (stop_sim == FALSE){
       df_sim <- rbind(df_sim_1[c(1:rounded_length),],
                       df_sim_0[c(1:(n_samples-rounded_length)),])
       
-      
-      
-      
-    
   }
-  
   if(length(df_sim[,1]) < n_samples || is.null(df_sim) || 
      apply(df_sim, 2, function(x) any(is.na(x))) || any(is.na(suppressWarnings(cor(df_sim)))) ){
     i <- i-1
@@ -624,7 +707,6 @@ if (stop_sim == FALSE){
     #Correlation calculation
     Correlations[[i]] <- cor(df_sim)
     SimulatedData[[i]] <- df_sim
-    
     #Mean correlation calculation
     mean_corr <- mean_corr + (Correlations[[i]]/nrep)
   }
