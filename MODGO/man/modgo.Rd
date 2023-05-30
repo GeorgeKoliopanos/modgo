@@ -34,39 +34,41 @@ modgo(
 }
 \arguments{
 \item{data}{a data frame containing the data whose characteristics are to be 
-mimicked during the data simulation.}
+mimicked during the data simulation. No missing values are allowed in
+the variables that should be used in the simulation (\code{variables}).}
 
-\item{ties_method}{Method on how to deal with equal values 
+\item{ties_method}{Method to be used when dealing with ties 
 during rank transformation. Acceptable input:"max","average","min". This
 parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the 
 parameter \code{ties.method} of \code{\link[base]{rank}}.}
 
-\item{variables}{a vector of which variables you want to transform.
-Default:colnames(data)}
+\item{variables}{a character vector indicating which columns of \code{data} 
+should be used during the simulation. Default: \code{colnames(data)}.}
 
 \item{bin_variables}{a character vector listing the binary variables.}
 
 \item{categ_variables}{a character vector listing the ordinal categorical 
 variables.}
 
-\item{count_variables}{a character vector listing the count as a sub
-sub category of categorical variables. Count variables should be part
-of categorical variables vector. Count variables are treated differently
-when using gldex to simulate them.}
+\item{count_variables}{a character vector listing the subset of the 
+categorical variables that should be treated as count variables. 
+Count variables are treated differently when using gldex to simulate them.}
 
 \item{n_samples}{Number of rows of each simulated data set. Default is
 the number of rows of \code{data}.}
 
-\item{sigma}{a covariance matrix of NxN (N= number of variables) 
-provided by the user to bypass the covariance matrix calculations}
+\item{sigma}{An NxN covariance matrix (N = number of variables). 
+Provided by the user to bypass the calculation of the covariance matrix of
+the transformed variables, which are assumed to follow the multinormal 
+distribution.}
 
 \item{nrep}{number of repetitions.}
 
 \item{noise_mu}{Logical value if you want to apply noise to
 multivariate mean. Default: FALSE}
 
-\item{pertr_vec}{A named vector.Vector's names are the continuous variables
-that the user want to perturb. Variance of simulated data set mimic original
+\item{pertr_vec}{A named vector. Vector's names are the continuous variables
+that the user wants to perturb. Variance of simulated data set mimic original
 data's variance.}
 
 \item{change_cov}{change the covariance of a specific pair of variables.}
@@ -77,22 +79,22 @@ of a specific pair of variables.}
 \item{seed}{A numeric value specifying the random seed. If \code{seed = NA},
 no random seed is set.}
 
-\item{thresh_var}{A data frame that contains the thresholds(left and right)
-of specified variables
+\item{thresh_var}{A data frame that contains the thresholds (left and right)
+of specified variables.
 (1st column: variable names, 2nd column: Left thresholds, 
 3rd column: Right thresholds)}
 
 \item{thresh_force}{A logical value indicating if you want to force threshold
 in case the proportion of samples that can surpass the threshold are less 
-than 10\%}
+than 10\%.}
 
 \item{var_prop}{A named vector that provides a  proportion of 
 value=1 for a specific binary variable(=name of the vector) that will be
 the proportion of this value in the simulated data sets.[this may increase
 execution time drastically]}
 
-\item{var_infl}{A named vector.Vector's names are the continuous variables
-that the user want to perturb and increase their variance}
+\item{var_infl}{A named vector. Vector's names are the continuous variables
+that the user want to perturb and increase their variance.}
 
 \item{infl_cov_stable}{Logical value. If TRUE,perturbation is applied to 
 original data set and simulations values mimic the perturbed original data 
@@ -160,7 +162,7 @@ test_modgo <- modgo(data = Cleveland,
      categ_variables =c("Chestpaintype"))
 }
 \references{
-Koliopanos, G. and Ojeda, F. and Ziegler Andreas (2023),
+Koliopanos, G. and Ojeda, F. and Ziegler, A. (2023),
 ``A simple-to-use R package for mimicking study data by simulations,'' 
 \emph{Methods Inf Med}.
 }

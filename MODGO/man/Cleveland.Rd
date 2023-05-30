@@ -27,5 +27,11 @@ modgo paper
 }
 \examples{
 data("Cleveland", package="modgo")
+
+}
+\references{
+Detrano, R. et al. (1989) ``International application of a new 
+probability algorithm for the diagnosis of coronary artery disease,''
+\emph{The American Journal of Cardiology}, \strong{64}(5), 304-310.
 }
 \keyword{data}

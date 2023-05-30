@@ -1,12 +1,20 @@
-#' Correlation transformation
+#' Correlation of transformed variables
 #' 
-#' Transforming covariance matrix using biserial, tetrachoric and
-#' polyserial functions 
+#' This function is used internally by \code{\link[modgo]{modgo}}. It finishes 
+#' the computation of the correlation matrix of the transformed variables, which 
+#' are assumed to follow a multivariate normal distribution. It computes the 
+#' correlations involving at least one categorical variable. For this purpose 
+#' the biserial, tetrachoric, polyserial and polychoric correlations are used. 
 #' 
-#' @param x a vector 
-#' @param ties_method Method on how to deal with equal values 
-#' during rank transformation.Acceptable input:"max","average","min".
-#' @return A numeric vector.
+#' @param data a data frame with original variables. 
+#' @param data_z data frame with transformed variables. 
+#' @param Sigma A numeric square matrix.
+#' @param variables variables a character vector indicating which 
+#' columns of \code{data} should be used.
+#' @param bin_variables a character vector listing the binary variables.
+#' @param  categ_variables a character vector listing the ordinal categorical 
+#' variables. 
+#' @return A correlation matrix.
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Normal rank transformation
 #'
@@ -16,8 +24,8 @@
 #'@importFrom psych polyserial
 #' @export
 
-Sigma_transformation <- function(data,data_z,Sigma,variables,
-                                 bin_variables=c(),categ_variables=c()) {
+Sigma_transformation <- function(data, data_z, Sigma, variables,
+                                 bin_variables = c(), categ_variables = c()) {
 
   cont_variables <- setdiff(variables,c(bin_variables,categ_variables))
   #Binary correlations

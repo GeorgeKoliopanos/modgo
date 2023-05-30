@@ -2,7 +2,7 @@
 % Please edit documentation in R/Sigma_transformation.R
 \name{Sigma_transformation}
 \alias{Sigma_transformation}
-\title{Correlation transformation}
+\title{Correlation of transformed variables}
 \usage{
 Sigma_transformation(
   data,
@@ -14,17 +14,29 @@ Sigma_transformation(
 )
 }
 \arguments{
-\item{x}{a vector}
+\item{data}{a data frame with original variables.}
 
-\item{ties_method}{Method on how to deal with equal values 
-during rank transformation.Acceptable input:"max","average","min".}
+\item{data_z}{data frame with transformed variables.}
+
+\item{Sigma}{A numeric square matrix.}
+
+\item{variables}{variables a character vector indicating which 
+columns of \code{data} should be used.}
+
+\item{bin_variables}{a character vector listing the binary variables.}
+
+\item{categ_variables}{a character vector listing the ordinal categorical 
+variables.}
 }
 \value{
-A numeric vector.
+A correlation matrix.
 }
 \description{
-Transforming covariance matrix using biserial, tetrachoric and
-polyserial functions
+This function is used internally by \code{\link[modgo]{modgo}}. It finishes 
+the computation of the correlation matrix of the transformed variables, which 
+are assumed to follow a multivariate normal distribution. It computes the 
+correlations involving at least one categorical variable. For this purpose 
+the biserial, tetrachoric, polyserial and polychoric correlations are used.
 }
 \author{
 Francisco M. Ojeda, George Koliopanos

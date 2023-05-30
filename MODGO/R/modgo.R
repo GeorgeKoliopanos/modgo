@@ -10,48 +10,50 @@
 #' al. (2023)). 
 #' 
 #' @param data a data frame containing the data whose characteristics are to be 
-#' mimicked during the data simulation.
-#' @param sigma a covariance matrix of NxN (N= number of variables) 
-#' provided by the user to bypass the covariance matrix calculations
-#' @param ties_method Method on how to deal with equal values 
+#' mimicked during the data simulation. No missing values are allowed in
+#' the variables that should be used in the simulation (\code{variables}).
+#' @param ties_method Method to be used when dealing with ties 
 #' during rank transformation. Acceptable input:"max","average","min". This
 #' parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the 
 #' parameter \code{ties.method} of \code{\link[base]{rank}}.
-#' @param variables a vector of which variables you want to transform.
-#' Default:colnames(data)
+#' @param variables a character vector indicating which columns of \code{data} 
+#' should be used during the simulation. Default: \code{colnames(data)}.
 #' @param bin_variables  a character vector listing the binary variables.
 #' @param categ_variables a character vector listing the ordinal categorical 
-#' variables.
-#' @param count_variables a character vector listing the count as a sub
-#'  sub category of categorical variables. Count variables should be part
-#'  of categorical variables vector. Count variables are treated differently
-#'  when using gldex to simulate them.
+#' variables. 
+#' @param count_variables a character vector listing the subset of the 
+#' categorical variables that should be treated as count variables. 
+#' Count variables are treated differently when using gldex to simulate them.  
+#' @param n_samples Number of rows of each simulated data set. Default is
+#' the number of rows of \code{data}.
+#' @param sigma An NxN covariance matrix (N = number of variables). 
+#' Provided by the user to bypass the calculation of the covariance matrix of
+#' the transformed variables, which are assumed to follow the multinormal 
+#' distribution.
 #' @param nrep number of repetitions.
 #' @param noise_mu Logical value if you want to apply noise to  
 #' multivariate mean. Default: FALSE
-#' @param pertr_vec A named vector.Vector's names are the continuous variables
-#' that the user want to perturb. Variance of simulated data set mimic original
+#' @param pertr_vec A named vector. Vector's names are the continuous variables
+#' that the user wants to perturb. Variance of simulated data set mimic original
 #' data's variance.
-#' @param var_infl A named vector.Vector's names are the continuous variables
-#' that the user want to perturb and increase their variance
+#' @param var_infl A named vector. Vector's names are the continuous variables
+#' that the user want to perturb and increase their variance.
 #' @param infl_cov_stable Logical value. If TRUE,perturbation is applied to 
 #' original data set and simulations values mimic the perturbed original data 
 #' set.Covariance matrix used for simulation = original data's correlations.
 #' If FALSE, perturbation is applied to the simulated data sets.
-#' @param n_samples Number of rows of each simulated data set. Default is
-#' the number of rows of \code{data}.
 #' @param change_cov change the covariance of a specific pair of variables.
 #' @param change_amount the amount of change in  the covariance
 #'  of a specific pair of variables.
 #' @param seed A numeric value specifying the random seed. If \code{seed = NA},
 #' no random seed is set.
-#' @param thresh_var A data frame that contains the thresholds(left and right)
-#' of specified variables
+#' @param thresh_var A data frame that contains the thresholds (left and right)
+#' of specified variables.
 #' (1st column: variable names, 2nd column: Left thresholds, 
 #' 3rd column: Right thresholds)
 #' @param thresh_force A logical value indicating if you want to force threshold
 #' in case the proportion of samples that can surpass the threshold are less 
-#' than 10\%
+#' than 10\%.
 #' @param var_prop A named vector that provides a  proportion of 
 #'  value=1 for a specific binary variable(=name of the vector) that will be
 #'  the proportion of this value in the simulated data sets.[this may increase
@@ -93,7 +95,7 @@
 #' \item{Sim_Dataset_Number}{Number of simulated datasets produced.} 
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords mock data generation
-#' @references Koliopanos, G. and Ojeda, F. and Ziegler Andreas (2023),
+#' @references Koliopanos, G. and Ojeda, F. and Ziegler, A. (2023),
 #' ``A simple-to-use R package for mimicking study data by simulations,'' 
 #' \emph{Methods Inf Med}.
 #' @examples 
@@ -116,9 +118,9 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   
  
   if (!is.na(seed)){
-  # Setting Seed
-  set.seed(seed)
-  
+    # Setting Seed
+    set.seed(seed)
+    
   }
 
   #Check input  
@@ -126,10 +128,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   if (!is.data.frame(data)){
     stop("Data is not a data frame")
   }
-  if (any(is.na(data))){
-    stop("Data set contains NA's")
-  }
-  
+
   if (!all(variables %in% colnames(data))){
   
     stop("Variables are not column names of data ")
@@ -145,7 +144,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
     if(length(which(data[,bin] %in% c(0,1))) < length(data[,bin])) {
       
-      stop(paste0("Binary variable",bin,"is neither 0 nor 1"))
+      stop(paste("Binary variable", bin, "is neither 0 nor 1"))
       
     }
   }
@@ -160,7 +159,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
   }
   # Find the continuous variables
-  continuous_var <- setdiff(variables,c(bin_variables,categ_variables))
+  continuous_var <- setdiff(variables, c(bin_variables, categ_variables))
   
   if (!(is.vector(gener_var) || length(gener_var) == 0)){
     stop("gener_var should be a vector")
@@ -204,6 +203,10 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   # Include only selected variables in the original dataset
   data <- data[,variables]
   
+  if (any(is.na(data))){
+    stop("Data set contains NA's")
+  }  
+  
   if(!all(apply(data, 2, function(x) is.numeric(x)))){
     
     stop("Data should only contain numerical values")
@@ -234,11 +237,9 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
   }
   
-  
-  
   if (length(pertr_vec) > 0 && !all(names(pertr_vec) %in% continuous_var) ){
     
-    stop("Pertrubation variables are not part of the provided 
+    stop("Perturbation variables are not part of the provided 
          continuous variables")
     
   }
@@ -261,13 +262,13 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
   }
   
-  if (change_amount!=0 && length(change_cov)==0){
+  if (change_amount != 0 && length(change_cov) == 0){
     
     stop("You need to provide a pair of variables(change_cov) 
           to change their covariance values")
   }
   
-  if (change_amount==0 && length(change_cov)==2){
+  if (change_amount == 0 && length(change_cov) == 2){
     
     stop("You need to provide an amount of change (change_amount)")
     
@@ -281,11 +282,11 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   # Noise in multivariate distributions centers
   if (noise_mu == TRUE){
     
-    ns <- rnorm(ncol(data),mean = 0,sd=1)
+    ns <- rnorm(ncol(data), mean = 0, sd=1)
     
     
   } else {
-    ns <- matrix(0,nrow = 1,ncol = ncol(data))
+    ns <- matrix(0, nrow = 1, ncol = ncol(data))
     
   }
   
@@ -295,13 +296,13 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
   }
   
-  if (length(var_prop)>0 & (var_prop>1 || var_prop <0)){
+  if (length(var_prop) > 0 & (var_prop > 1 || var_prop < 0)){
    
      stop("Variable proportion should be between 0 and 1")
     
   }
   
-  if (length(var_prop)>1 ){
+  if (length(var_prop) > 1){
     
     stop("You cannot set proportion for more than 1 variable")
     
@@ -317,7 +318,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   OriginalData <- data
   
   # Normal run in case user does not provide a sigma
-  if(length(sigma)==0){
+  if(length(sigma) == 0){
     
   # Rank transformation of each column of the data set
   df_rbi <- data
@@ -339,7 +340,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   }
   }
     
-  subst_list <- vector(mode="list",length = length(categ_var))
+  subst_list <- vector(mode = "list", length = length(categ_var))
   names(subst_list) <- categ_var
   
   for (cate in categ_var){
@@ -543,8 +544,8 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
   if (length(var_prop) ==1 ){
     
     mt_sim <- MASS::mvrnorm(n = n_samples, 
-                            mu = rep(0, ncol(data)) +ns,
-                            Sigma = Sigma,tol=tol)
+                            mu = rep(0, ncol(data)) + ns,
+                            Sigma = Sigma, tol = tol)
     df_sim <- data.frame(mt_sim)
     names(df_sim) <- names(data)
     #Inverse transformation of each variable
@@ -591,7 +592,7 @@ modgo <- function(data,ties_method =  "max", variables = colnames(data),
     
   }
   
-  # Starting loop for many repetions
+  # Starting loop for many repetitions
   
   Correlations <- vector(mode = "list", length = nrep+1)
   mean_corr <- matrix(0,nrow =ncol(data),ncol = ncol(data))
@@ -711,7 +712,7 @@ if (stop_sim == FALSE){
     mean_corr <- mean_corr + (Correlations[[i]]/nrep)
   }
   
-  if(counter > 100*nrep){
+  if(counter > 100 * nrep){
     stop("Could not create simulated datasets with this specific thresholds")
   } 
   
