@@ -9,9 +9,9 @@
 #' University of California, Irvine,School of Information;
 #' Computer Sciences. http://archive.ics.uci.edu/ml
 #' 
-#' Selected 11 variables. Missing values were imputed. For each categorical 
-#' variable, imputed values were drawn from a random sample with the 
-#' probability of each category calculated from non-missing values.
+#' Selected 11 variables and impute missing values
+#' Imputation method is described in the Supplementary file 1 of the 
+#' modgo paper
 #' 
 #' @name Cleveland
 #' 
@@ -21,34 +21,12 @@
 #'
 #' @usage data("Cleveland")
 #' 
-#' @format A data frame with 303 rows and 11 columns.
-#' \describe{
-#'   \item{Age}{Age (years).}
-#'   \item{Sex}{Sex (1 = male; 0 = female).}
-#'   \item{Chestpaintype}{Chest pain type (1 = typical angina; 
-#'                        2 = atypical angina; 3 = non-anginal pain;
-#'                        4 = asymptomatic).}
-#'   \item{RestingBP}{Resting blood pressure on admission to the hospital 
-#'                    (mm Hg).} 
-#'   \item{Cholsterol}{Serum cholesterol (mg/dl)}
-#'   \item{HighFastBloodSugar}{Fasting blood sugar > 120 mg/dl (1 = true; 
-#'                             0 = false)}
-#'   \item{RestingECG}{Resting electrocardiographic results (0 = normal;
-#'                     1 = having ST-T wave abnormality (T wave inversions 
-#'                     and/or ST elevation or depression of > 0.05 mV); 
-#'                     2 = showing probable or definite left ventricular 
-#'                     hypertrophy by Estes' criteria)}
-#'   \item{MaxHeartRate}{Maximum heart rate achieved 
-#'                       (\bold{bpm? Unit apparently not documented})}
-#'   \item{ExInducedAngina}{Exercise induced angina (1 = yes; 0 = no).}
-#'   \item{STDepression}{ST depression induced by exercise relative to rest.}
-#'   \item{CAD}{Diagnosis of heart disease (0: < 50\% diameter narrowing;
-#'              1 : > 50\% diameter narrowing).}                                      
-#' } 
+#' @format A data frame
+#' 
 #' 
 #' @examples
 #' data("Cleveland", package="modgo")
-#'
+#' 
 #' @references Detrano, R. et al. (1989) ``International application of a new 
 #' probability algorithm for the diagnosis of coronary artery disease,''
 #' \emph{The American Journal of Cardiology}, \strong{64}(5), 304-310.

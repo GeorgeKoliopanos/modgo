@@ -33,7 +33,7 @@ data("Cleveland",package="modgo")
 test_modgo <- modgo(data = Cleveland,
      bin_variables = c("CAD","HighFastBloodSugar","Sex","ExInducedAngina"),
      categ_variables =c("Chestpaintype"))
-     
+
 corr_plots(test_modgo)
 
 }

@@ -5,7 +5,7 @@
 #' percentile functions
 #' 
 #' @param x a vector of z values 
-#' @param x_original a data frame or matrix of the original dataset
+#' @param n_samples number of samples you need to produce
 #' @return A numeric vector.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
@@ -22,7 +22,7 @@
 
 
 
-general_transform_inv <- function (x, x_original, lmbds) {
+general_transform_inv <- function (x, n_samples, lmbds) {
   
   if (!requireNamespace("GLDEX", quietly = TRUE)) {
     stop(
@@ -38,11 +38,10 @@ general_transform_inv <- function (x, x_original, lmbds) {
   }else if (length(na.omit(lmbds)) == 2){
     theta <- lmbds[1]
     lambda <- lmbds[2]
-    n <- length(x)
-    
+
     mym <- theta/(1- lambda)
     myv <- sqrt(theta*(1-lambda)^(-3))
-    Y <- rnorm(n)
+    Y <- x
     var_pois <- myv^2
     if (var_pois >= 10){
       Q <- round(mym+myv*Y+0.5)
@@ -54,16 +53,18 @@ general_transform_inv <- function (x, x_original, lmbds) {
   }else if (length(na.omit(lmbds)) == 11){
     if(lmbds[10] == 1){model_1 <- "fmkl"} else{model_1 <- "rs"}
     if(lmbds[11] == 1){model_2 <- "fmkl"} else{model_2 <- "rs"}
-    Q <- na.omit(unlist(GLDEX::fun.simu.bimodal(lmbds[1:4],
-                                                lmbds[5:8],
-                                                lmbds[9],
-                                                len = length(x_original),
-                                                no.test = 20,
-                                                param1 = model_1,
-                                                param2 = model_2)))
-    Q <- as.vector(Q[1:length(x_original)])
+    
+    first_distr_num <- ceiling(n_samples*lmbds[9])
+    y <- pnorm(x)
+    Q_1 <- GLDEX::qgl(y[1:first_distr_num],
+                      lmbds[1:4],
+                      param = model_1)
+    Q_2 <- GLDEX::qgl(y[(first_distr_num + 1):n_samples],
+                      lmbds[5:8],
+                      param = model_2)
+    Q <- as.vector(c(Q_1,Q_2))
   }else {
-    stop(paste0("Error with lambda creation in ",i))
+    stop(paste0("Error with lambda creation"))
     
   }
   

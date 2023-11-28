@@ -20,22 +20,22 @@ Sigma_transformation(
 
 \item{Sigma}{A numeric square matrix.}
 
-\item{variables}{variables a character vector indicating which 
+\item{variables}{variables a character vector indicating which
 columns of \code{data} should be used.}
 
 \item{bin_variables}{a character vector listing the binary variables.}
 
-\item{categ_variables}{a character vector listing the ordinal categorical 
+\item{categ_variables}{a character vector listing the ordinal categorical
 variables.}
 }
 \value{
 A correlation matrix.
 }
 \description{
-This function is used internally by \code{\link[modgo]{modgo}}. It finishes 
-the computation of the correlation matrix of the transformed variables, which 
-are assumed to follow a multivariate normal distribution. It computes the 
-correlations involving at least one categorical variable. For this purpose 
+This function is used internally by \code{\link[modgo]{modgo}}. It finishes
+the computation of the correlation matrix of the transformed variables, which
+are assumed to follow a multivariate normal distribution. It computes the
+correlations involving at least one categorical variable. For this purpose
 the biserial, tetrachoric, polyserial and polychoric correlations are used.
 }
 \author{

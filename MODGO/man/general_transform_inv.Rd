@@ -4,12 +4,12 @@
 \alias{general_transform_inv}
 \title{Inverse gldex transformation}
 \usage{
-general_transform_inv(x, x_original, lmbds)
+general_transform_inv(x, n_samples, lmbds)
 }
 \arguments{
 \item{x}{a vector of z values}
 
-\item{x_original}{a data frame or matrix of the original dataset}
+\item{n_samples}{number of samples you need to produce}
 }
 \value{
 A numeric vector.
