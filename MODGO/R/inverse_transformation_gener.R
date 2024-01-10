@@ -4,7 +4,8 @@
 #' the original dataset using Generalized Lambda and Generalized Poisson 
 #' percentile functions
 #' 
-#' @param x a vector of z values 
+#' @param x a vector of z values
+#' @param data a data frame with original variables.
 #' @param n_samples number of samples you need to produce
 #' @return A numeric vector.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
@@ -22,7 +23,7 @@
 
 
 
-general_transform_inv <- function (x, n_samples, lmbds) {
+general_transform_inv <- function (x, data = NULL, n_samples, lmbds) {
   
   if (!requireNamespace("GLDEX", quietly = TRUE)) {
     stop(
@@ -35,6 +36,11 @@ general_transform_inv <- function (x, n_samples, lmbds) {
     if(lmbds[5] == 1){model <- "fmkl"} else{model <- "rs"}
     y <- pnorm(x)
     Q <- GLDEX::qgl(y, lmbds[1:4], param = model)
+  }else if (length(na.omit(lmbds)) == 1){
+    Q <- rbi_normal_transform_inv(x,
+                                  rbinom(n = length(x),
+                                         1,
+                                         prob = lmbds[1]))
   }else if (length(na.omit(lmbds)) == 2){
     theta <- lmbds[1]
     lambda <- lmbds[2]
@@ -63,8 +69,8 @@ general_transform_inv <- function (x, n_samples, lmbds) {
                       lmbds[5:8],
                       param = model_2)
     Q <- as.vector(c(Q_1,Q_2))
-  }else {
-    stop(paste0("Error with lambda creation"))
+  }else if (length(na.omit(lmbds)) == 0){
+    Q <- rbi_normal_transform_inv(x, data)
     
   }
   

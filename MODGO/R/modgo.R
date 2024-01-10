@@ -69,9 +69,9 @@
 #' @param gener_var_model A matrix that contains two columns named "Variable" and
 #' "Model". This matrix can be used only if a gener_var_model argument is
 #' provided. It specifies what model should be used for each Variable.
-#' Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
-#' e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-#' The user can select Generalised Poisson model for poisson variabes,
+#' Model values should be "rmfmkl", "rprs", "star" or a combination of them,
+#' e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
+#' The user can select Generalised Poisson model for poisson variables,
 #' but this model cannot be included in bimodal simulation
 #' @param gener_var_lmbds A matrix that contains lmbds values for each of the
 #' variables of the data set to be used for either Generalized Lambda Distribution
@@ -131,7 +131,7 @@ modgo <-
            stop_sim = FALSE,
            new_mean_sd = NULL,
            multi_sugg_prop = NULL,
-           gener_var = NULL,
+           gener_var = FALSE,
            gener_var_model = NULL,
            gener_var_lmbds = NULL) {
     if (!is.na(seed)) {
@@ -151,11 +151,11 @@ modgo <-
     
     # Noise in multivariate distributions centers
     if (noise_mu == TRUE) {
-      ns <- rnorm(ncol(data), mean = 0, sd = 1)
+      ns <- rnorm(length(variables), mean = 0, sd = 1)
       
       
     } else {
-      ns <- matrix(0, nrow = 1, ncol = ncol(data))
+      ns <- matrix(0, nrow = 1, ncol = length(variables))
       
     }
     
@@ -202,11 +202,11 @@ modgo <-
     ## Inflation analysis - stable covariance matrix
     if (length(var_infl) > 0 && infl_cov_stable == TRUE) {
       #Inverse transformation of each variable
-      for (j in 1:ncol(data)) {
+      for (j in 1:length(variables)) {
         if (colnames(data)[[j]] %in% names(var_infl)) {
           p <- var_infl[which(names(var_infl) == colnames(data)[[j]])]
           data[[j]] <- data[[j]] +
-            rnorm(length(data[[j]]),
+            rnorm(n_samples,
                   mean = 0,
                   sd = sd(sqrt(p) * data[[j]]))
           
@@ -215,22 +215,24 @@ modgo <-
     }
     
     # Prepare gener_var four moments
-    if (is.null(gener_var_lmbds)) {
+    if (is.null(gener_var_lmbds) && gener_var == TRUE) {
       gener_var_lmbds <- generalizedMatrix(data,
-                                           gener_var,
-                                           gener_var_model)
+                                           variables,
+                                           bin_variables,
+                                           gener_var_model,
+                                           multi_sugg_prop)
     }
     
     ## Thresholds
     if (length(thresh_var[, 1]) > 0) {
       mt_sim <- MASS::mvrnorm(
         n = n_samples,
-        mu = rep(0, ncol(data)) + ns,
+        mu = rep(0, length(variables)) + ns,
         Sigma = Sigma,
         tol = tol
       )
       df_sim <- data.frame(mt_sim)
-      names(df_sim) <- names(data)
+      names(df_sim) <- variables
       #Inverse transformation of each variable
       df_sim <- generate_simulated_data(data = data,
                               df_sim = df_sim,
@@ -286,12 +288,12 @@ modgo <-
     if (length(var_prop) == 1) {
       mt_sim <- MASS::mvrnorm(
         n = n_samples,
-        mu = rep(0, ncol(data)) + ns,
+        mu = rep(0, length(variables)) + ns,
         Sigma = Sigma,
         tol = tol
       )
       df_sim <- data.frame(mt_sim)
-      names(df_sim) <- names(data)
+      names(df_sim) <- variables
       #Inverse transformation of each variable
       df_sim <- generate_simulated_data(data = data,
                               df_sim = df_sim,
@@ -322,7 +324,7 @@ modgo <-
     # Starting loop for many repetions
     
     Correlations <- vector(mode = "list", length = nrep + 1)
-    mean_corr <- matrix(0, nrow = ncol(data), ncol = ncol(data))
+    mean_corr <- matrix(0, nrow = length(variables), ncol = length(variables))
     
     SimulatedData <- vector(mode = "list", length = nrep)
     i <- 1
@@ -332,12 +334,12 @@ modgo <-
       while (i < nrep + 1) {
         mt_sim <- MASS::mvrnorm(
           n = ceiling(n_samples * thresh_multi),
-          mu = rep(0, ncol(data)) + ns,
+          mu = rep(0, length(variables)) + ns,
           Sigma = Sigma,
           tol = tol
         )
         df_sim <- data.frame(mt_sim)
-        names(df_sim) <- names(data)
+        names(df_sim) <- variables
         #Inverse transformation of each variable
         df_sim <- generate_simulated_data(data = data,
                                 df_sim = df_sim,
@@ -396,11 +398,13 @@ modgo <-
           
           counter <- counter + 1
         } else {
+          if (!is.null(data)){
           df_sim <- df_sim[c(1:n_samples),]
           for (j in rownames(new_mean_sd)) {
             df_sim[[j]] <-
               ((df_sim[[j]] - mean(OriginalData[[j]])) /  sd(OriginalData[[j]])) * new_mean_sd[j, "SD"] +
               new_mean_sd[j, "Mean"]
+          }
           }
           #Correlation calculation
           Correlations[[i]] <- cor(df_sim)

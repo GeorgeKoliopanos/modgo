@@ -40,7 +40,7 @@
 #' original data set and simulations values mimic the perturbed original data
 #' set.Covariance matrix used for simulation = original data's correlations.
 #' If FALSE, perturbation is applied to the simulated data sets.
-#' @return Simulated Data Frame
+#' @return Simulation Data Frame
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Normal rank transformation
 
@@ -58,30 +58,40 @@ generate_simulated_data <- function(data,
                            var_infl,
                            infl_cov_stable
                           ){
-  for (j in 1:ncol(df_sim)) {
-    variable <- colnames(df_sim)[[j]]
-    if (colnames(df_sim)[[j]] %in% names(multi_sugg_prop)) {
-      df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]],
-                                              rbinom(n = dim(df_sim)[1],
-                                                     1,
-                                                     prob = multi_sugg_prop[variable]))
-    } else {
-      if (!(variable %in% gener_var)) {
+  for (j in 1:length(variables)) {
+    variable <- variables[[j]]
+    # Default modgo rank inverse transformation
+    if(gener_var == FALSE){
+      # Multi suggestive proportion rank inverse transormation 
+      if (colnames(df_sim)[[j]] %in% names(multi_sugg_prop)) {
         df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]],
-                                                data[[j]])
-      } else if (variable %in% gener_var) {
-        df_sim[[j]] <- general_transform_inv(df_sim[[j]],
-                                             n_samples,
-                                             gener_var_lmbds[, variable])
-        if (variable %in% categ_variables) {
+                                                rbinom(n = dim(df_sim)[1],
+                                                       1,
+                                                       prob = multi_sugg_prop[variable]))
+      } else {
+        # Default rank inverse transformation
+          df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]],
+                                                  data[[j]])
+        } 
+      } else if (gener_var == TRUE) {
+        # Generalised transformation using Generalised Lambdas
+        df_sim[[j]] <- general_transform_inv(x = df_sim[[j]],
+                                             data = data[[j]],
+                                             n_samples = n_samples,
+                                             lmbds = gener_var_lmbds[, variable])
+      }
+    # Round categorical simulated data
+    if (variable %in% categ_variables) {
           if (!(variable %in% count_variables)) {
             df_sim[[j]] <- round(df_sim[[j]])
-            df_sim[[j]][df_sim[[j]] > max(data[[j]])] <-
-              max(data[[j]])
-            df_sim[[j]][df_sim[[j]] < min(data[[j]])] <-
-              min(data[[j]])
-          } else{
-            #print(gener_var_lmbds[1, variable])
+            if (!is.null(data)){
+              df_sim[[j]][df_sim[[j]] > max(data[[j]])] <-
+                max(data[[j]])
+              df_sim[[j]][df_sim[[j]] < min(data[[j]])] <-
+                min(data[[j]])
+            }
+          } else {
+            # Round/Floor count variables depending on theta value
             if (gener_var_lmbds[1, variable] >= 10) {
               df_sim[[j]] <- round(df_sim[[j]])
               df_sim[[j]][df_sim[[j]] < 0] <- 0
@@ -91,19 +101,20 @@ generate_simulated_data <- function(data,
             }
           }
         }
-      }
-    }
-    if (colnames(data)[[j]] %in% names(pertr_vec)) {
-      p <- pertr_vec[which(names(pertr_vec) == colnames(data)[[j]])]
+      
+    # Perturbation of simulated values
+    if (variables[[j]] %in% names(pertr_vec)) {
+      p <- pertr_vec[which(names(pertr_vec) == variables[[j]])]
       
       df_sim[[j]] <- (df_sim[[j]] * sqrt(1 - p)) +
         rnorm(length(df_sim[[j]]),
               mean = 0,
               sd = sd(df_sim[[j]]) * sqrt(p))
     }
-    if (colnames(data)[[j]] %in% names(var_infl) &&
+    # Inflation of simulated data
+    if (variables[[j]] %in% names(var_infl) &&
         infl_cov_stable == FALSE) {
-      p <- var_infl[which(names(var_infl) == colnames(data)[[j]])]
+      p <- var_infl[which(names(var_infl) == variables[[j]])]
       
       df_sim[[j]] <- df_sim[[j]] +
         rnorm(length(df_sim[[j]]),

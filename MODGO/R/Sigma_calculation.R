@@ -21,11 +21,12 @@ Sigma_calculation <- function (data,
                                bin_variables,
                                categ_variables,
                                ties_method) {
-  
+  # Rank transform original data
+  data <- data[,variables]
   df_rbi <-
     as.data.frame(do.call(cbind, lapply(data, function (x)
       rbi_normal_transform(x, ties_method = ties_method))))
-  
+  # Calculate correlation matrix
   Sigma <- cov(df_rbi)
   diag(Sigma) <- 1
   
@@ -68,7 +69,8 @@ Sigma_calculation <- function (data,
   
   options(warn = -1)
   
-  
+  # Calculate correlation matrix using polychoric, polyserial, bichoric,
+  # biserial functions
   Sigma <- suppressWarnings(suppressMessages(Sigma_transformation(
     data = data,
     data_z = df_rbi,

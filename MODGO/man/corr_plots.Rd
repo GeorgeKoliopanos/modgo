@@ -7,17 +7,15 @@
 corr_plots(
   Modgo_obj,
   sim_dataset = 1,
-  variables = colnames(Modgo_obj[["OriginalData"]]),
-  tl.cex = 0.5,
-  tl.srt = 90,
-  title_pos = 5,
-  title_height = 0,
-  title_size = 0.8,
-  ...
+  variables = colnames(Modgo_obj[["SimulatedData"]][[1]])
 )
 }
 \arguments{
 \item{Modgo_obj}{A list object produced from modgo package}
+
+\item{sim_dataset}{A number indicating the number of the simulated dataset}
+
+\item{variables}{A character list listing the name of the requested variables}
 }
 \value{
 A plot.

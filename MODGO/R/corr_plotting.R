@@ -4,6 +4,8 @@
 #' Mean correlation matrix
 #'
 #' @param Modgo_obj A list object produced from modgo package
+#' @param sim_dataset A number indicating the number of the simulated dataset
+#' @param variables A character list listing the name of the requested variables
 #' @return A plot.
 #' @author Francisco M. Ojeda, George Koliopanos
 #'
@@ -18,77 +20,50 @@
 #' corr_plots(test_modgo)
 #'
 #' @export
-#' @importFrom corrplot corrplot
+#' @importFrom ggcorrplot ggcorrplot
+#' @import patchwork
 
 
 
 corr_plots <- function(Modgo_obj,
                        sim_dataset = 1,
-                       variables = colnames(Modgo_obj[["OriginalData"]]),
-                       tl.cex = 0.5,
-                       tl.srt = 90,
-                       title_pos = 5,
-                       title_height = 0.0,
-                       title_size = 0.8,
-                       ...) {
-  if (!all(variables %in% colnames(Modgo_obj[["OriginalData"]]))) {
+                       variables = colnames(Modgo_obj[["SimulatedData"]][[1]])) {
+  if (!all(variables %in% colnames(Modgo_obj[["SimulatedData"]][[1]]))) {
     stop("Not all variables are in column names of data ")
     
   }
   
-  opar <- par()
-  par(mfrow = c(2, 2))
-  cor1 <- cor(as.matrix(Modgo_obj[["OriginalData"]][, variables]))
+  
+  cor1 <- as.matrix(Modgo_obj$PreSim_Sigma[variables,variables])
   cor2 <-
     cor(as.matrix(Modgo_obj[["SimulatedData"]][[sim_dataset]][, variables]))
   cor3 <- Modgo_obj[["Correlations"]][["Mean"]][variables, variables]
   cor4 <- cor1 - cor2
   
   
-  corrplot::corrplot(cor1,
-                     tl.cex = tl.cex,
-                     tl.srt = tl.srt,
-                     tl.col = "black",
-                     ...)
-  mtext("Original",
-        at = title_pos,
-        line = title_height,
-        cex = title_size)
-  corrplot::corrplot(cor2,
-                     tl.cex = tl.cex,
-                     tl.srt = tl.srt,
-                     tl.col = "black",
-                     ...)
-  mtext("Simulated",
-        at = title_pos,
-        line = title_height,
-        cex = title_size)
+  original_plot <- ggcorrplot::ggcorrplot(cor1,
+                                          method = "circle",
+                                          title = "Original",
+                                          colors = c("red","white","blue"))
   
-  corrplot::corrplot(cor3,
-                     tl.cex = tl.cex,
-                     tl.srt = tl.srt,
-                     tl.col = "black",
-                     ...)
-  mtext(
-    "Mean correlation of \nsimulations",
-    at = title_pos,
-    line = title_height,
-    cex = title_size
-  )
-  
-  corrplot::corrplot(cor4,
-                     tl.cex = tl.cex,
-                     tl.srt = tl.srt,
-                     tl.col = "black",
-                     ...)
-  mtext(
-    "Original minus \nsimulated",
-    at = title_pos,
-    line = title_height,
-    cex = title_size
-  )
-  
-  par(mfrow = opar[["mfrow"]])
+  simulation_plot <- ggcorrplot::ggcorrplot(cor2,
+                                            method = "circle",
+                                            title = "Simulated",
+                                            colors = c("red","white","blue"))
   
   
+  mean_plot <- ggcorrplot::ggcorrplot(cor3,
+                                      method = "circle",
+                                      title = "Mean correlation of \nsimulations",
+                                      colors = c("red","white","blue"))
+  
+  
+  difference_plot <- ggcorrplot::ggcorrplot(cor4,
+                                            method = "circle",
+                                            title = "Original minus \nsimulated",
+                                            colors = c("red","white","blue"))
+  
+  
+  
+  (original_plot + simulation_plot)/(mean_plot + difference_plot)
 }

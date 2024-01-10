@@ -24,6 +24,9 @@ distr_plots <- function(Modgo_obj,
                         variables=colnames(Modgo_obj[["OriginalData"]]),
                         sim_dataset=1,wespalette="Cavalcanti1",text_size=12) {
   
+  if(is.null(Modgo_obj[["OriginalData"]])){
+    stop("Distr_plots cannot run without providing an original dataset in the main modgo function")
+  }
   if (!all(variables %in% colnames(Modgo_obj[["OriginalData"]]))){
     
     stop("Not all variables are in column names of data ")

@@ -33,18 +33,22 @@ Inverse_transformation_variables <- function (data, df_sim,
                                               categ_variables, n_samples,
                                               gener_var, gener_var_lmbds) {
   
-  for (j in 1:ncol(df_sim)) {
+  for (j in 1:length(variables)) {
     variable <- colnames(df_sim)[j]
-    
-    if (!(variable %in% gener_var)) {
+    if (!(gener_var)) {
+      # Default modgo rank transform
       df_sim[[j]] <- rbi_normal_transform_inv(df_sim[[j]], data[[j]])
       
-    } else if (variable %in% gener_var) {
-      df_sim[[j]] <- general_transform_inv(df_sim[[j]],
-                                           n_samples,
-                                           gener_var_lmbds[, variable])
+    } else if (gener_var) {
+      # Generalized Lambda simulation = TRUE
+      df_sim[[j]] <- general_transform_inv(x = df_sim[[j]],
+                                           data = data,
+                                           n_samples = n_samples,
+                                           lmbds = gener_var_lmbds[, variable])
+      # Round categorical variables depending
       if (variable %in% categ_variables) {
         if (!(variable %in% count_variables)) {
+          
           df_sim[[j]] <- round(df_sim[[j]])
           df_sim[[j]][df_sim[[j]] > max(data[[j]])] <-
             max(data[[j]])

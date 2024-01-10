@@ -4,18 +4,37 @@
 \alias{generalizedMatrix}
 \title{Generalized Lambda and Poisson preparation}
 \usage{
-generalizedMatrix(data, gener_var, gener_var_model)
+generalizedMatrix(
+  data,
+  variables = colnames(data),
+  bin_variables = NULL,
+  gener_var_model = NULL,
+  multi_sugg_prop = NULL
+)
 }
 \arguments{
 \item{data}{a data frame with original variables.}
 
-\item{gener_var}{data frame with transformed variables.}
+\item{bin_variables}{a character vector listing the binary variables.}
 
-\item{gener_var_model}{A numeric square matrix.}
+\item{gener_var_model}{A matrix that contains two columns named "Variables" and
+"Model". This matrix can be used only if a gener_var_model argument is
+provided. It specifies what model should be used for each Variable.
+Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
+e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
+The user can select Generalised Poisson model for poisson variabes,
+but this model cannot be included in bimodal simulation}
+
+\item{multi_sugg_prop}{A named vector that provides a  proportion of
+value=1 for specific binary variables(=name of the vector) that will be
+the close to the proportion of this value in the simulated data sets.}
 }
 \value{
 A numeric matrix
 }
 \description{
 Prepare the four moments matrix for GLD and GPD
+}
+\author{
+Francisco M. Ojeda, George Koliopanos
 }

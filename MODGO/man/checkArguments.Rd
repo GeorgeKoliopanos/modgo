@@ -28,12 +28,15 @@ checkArguments(
   stop_sim = FALSE,
   new_mean_sd = NULL,
   multi_sugg_prop = NULL,
-  gener_var = NULL,
+  gener_var = FALSE,
   gener_var_model = NULL,
   gener_var_lmbds = NULL
 )
 }
 \arguments{
+\item{data}{a data frame containing the data whose characteristics are to be
+mimicked during the data simulation.}
+
 \item{ties_method}{Method on how to deal with equal values
 during rank transformation. Acceptable input:"max","average","min". This
 parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the
@@ -113,8 +116,8 @@ must be declared as ROWNAMES in the matrix}
 value=1 for specific binary variables(=name of the vector) that will be
 the close to the proportion of this value in the simulated data sets.}
 
-\item{gener_var}{A vector indicating the which variables should
-be simulated using generalized lambda distribution}
+\item{gener_var}{A logical value indicating if you want to use generalised 
+distribution to simulate your data}
 
 \item{gener_var_model}{A matrix that contains two columns named "Variable" and
 "Model". This matrix can be used only if a gener_var_model argument is
@@ -127,6 +130,7 @@ but this model cannot be included in bimodal simulation.}
 \description{
 Check that the arguments are following
 the corresponding conditions
-#' @param data a data frame containing the data whose characteristics are to be
-mimicked during the data simulation.
+}
+\author{
+Francisco M. Ojeda, George Koliopanos
 }
