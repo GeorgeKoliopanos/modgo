@@ -10,6 +10,10 @@
 #' @param bin_variables a character vector listing the binary variables.
 #' @param  categ_variables a character vector listing the ordinal categorical
 #' variables.
+#' @param ties_method Method on how to deal with equal values
+#' during rank transformation. Acceptable input:"max","average","min". This
+#' parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the
+#' parameter \code{ties.method} of \code{\link[base]{rank}}.
 #' @return A correlation matrix.
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Normal rank transformation

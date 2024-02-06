@@ -10,9 +10,10 @@ Inverse_transformation_variables(
   variables,
   bin_variables,
   categ_variables,
+  count_variables,
   n_samples,
-  gener_var,
-  gener_var_lmbds
+  generalized_mode,
+  generalized_mode_lmbds
 )
 }
 \arguments{
@@ -28,20 +29,21 @@ columns of \code{data} should be used.}
 \item{categ_variables}{a character vector listing the ordinal categorical
 variables.}
 
+\item{count_variables}{a character vector listing the count as a sub
+sub category of categorical variables. Count variables should be part
+of categorical variables vector. Count variables are treated differently
+when using gldex to simulate them.}
+
 \item{n_samples}{Number of rows of each simulated data set. Default is
 the number of rows of \code{data}.}
 
-\item{gener_var_lmbds}{A matrix that contains lmbds values for each of the
-variables of the data set to be used for either Generalized Lambda Distribution
-Generalized Poisson Distribution or setting up thresholds}
+\item{generalized_mode}{A logical value indicating if 
+generalized lambda/poisson distributions or set up thresholds will be used to
+generate the simulated values}
 
-\item{gener_var_model}{A matrix that contains two columns named "Variable" and
-"Model". This matrix can be used only if a gener_var_model argument is
-provided. It specifies what model should be used for each Variable.
-Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
-e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-The user can select Generalised Poisson model for poisson variabes,
-but this model cannot be included in bimodal simulation}
+\item{generalized_mode_lmbds}{A matrix that contains lambdas values for each 
+of the variables of the data set to be used for either Generalized Lambda
+Distribution Generalized Poisson Distribution or setting up thresholds}
 }
 \value{
 A correlation matrix.

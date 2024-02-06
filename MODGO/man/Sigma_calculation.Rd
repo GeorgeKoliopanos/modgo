@@ -16,6 +16,11 @@ columns of \code{data} should be used.}
 
 \item{categ_variables}{a character vector listing the ordinal categorical
 variables.}
+
+\item{ties_method}{Method on how to deal with equal values
+during rank transformation. Acceptable input:"max","average","min". This
+parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the
+parameter \code{ties.method} of \code{\link[base]{rank}}.}
 }
 \value{
 A correlation matrix.

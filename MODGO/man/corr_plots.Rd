@@ -7,7 +7,7 @@
 corr_plots(
   Modgo_obj,
   sim_dataset = 1,
-  variables = colnames(Modgo_obj[["SimulatedData"]][[1]])
+  variables = colnames(Modgo_obj[["simulated_data"]][[1]])
 )
 }
 \arguments{

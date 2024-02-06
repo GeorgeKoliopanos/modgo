@@ -31,10 +31,11 @@ modgo_survival(
   stop_sim = FALSE,
   new_mean_sd = NULL,
   multi_sugg_prop = NULL,
-  gener_var = TRUE,
-  gener_var_model_event = NULL,
-  gener_var_model_no_event = NULL,
-  gener_var_lmbds = NULL
+  generalized_mode = TRUE,
+  generalized_mode_model = NULL,
+  generalized_mode_model_event = "rprs",
+  generalized_mode_model_no_event = "rprs",
+  generalized_mode_lmbds = NULL
 )
 }
 \arguments{
@@ -131,44 +132,52 @@ must be declared as ROWNAMES in the matrix}
 value=1 for specific binary variables(=name of the vector) that will be
 the close to the proportion of this value in the simulated data sets.}
 
-\item{gener_var}{A logical value indicating if generalized lambda/poisson
+\item{generalized_mode}{A logical value indicating if generalized lambda/poisson
 distributions or set up thresholds will be used to generate the simulated values}
 
-\item{gener_var_model_event}{A matrix that contains two columns named "Variable" and
-"Model" and it is to be used for the event data set(event = 1). This matrix can be used only if a gener_var_model argument is
+\item{generalized_mode_model}{A matrix that contains two columns named "Variable" and
+"Model". This matrix can be used only if a generalized_mode_model argument is
 provided. It specifies what model should be used for each Variable.
 Model values should be "rmfmkl", "rprs", "star" or a combination of them,
 e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
 The user can select Generalised Poisson model for poisson variables,
 but this model cannot be included in bimodal simulation}
 
-\item{gener_var_model_no_event}{A matrix that contains two columns named "Variable" and
-"Model" and it is to be used for the non-event data set(event = 0). This matrix can be used only if a gener_var_model argument is
+\item{generalized_mode_model_event}{A matrix that contains two columns named "Variable" and
+"Model" and it is to be used for the event data set(event = 1). This matrix can be used only if a generalized_mode_model argument is
 provided. It specifies what model should be used for each Variable.
 Model values should be "rmfmkl", "rprs", "star" or a combination of them,
 e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
 The user can select Generalised Poisson model for poisson variables,
 but this model cannot be included in bimodal simulation}
 
-\item{gener_var_lmbds}{A matrix that contains lmbds values for each of the
+\item{generalized_mode_model_no_event}{A matrix that contains two columns named "Variable" and
+"Model" and it is to be used for the non-event data set(event = 0). This matrix can be used only if a generalized_mode_model argument is
+provided. It specifies what model should be used for each Variable.
+Model values should be "rmfmkl", "rprs", "star" or a combination of them,
+e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
+The user can select Generalised Poisson model for poisson variables,
+but this model cannot be included in bimodal simulation}
+
+\item{generalized_mode_lmbds}{A matrix that contains lambdas values for each of the
 variables of the data set to be used for either Generalized Lambda Distribution
 Generalized Poisson Distribution or setting up thresholds}
 }
 \value{
 A list with the following components:
-\item{SimulatedData}{A list of data frames containing the simulated data.}
-\item{OriginalData}{A data frame with the input data.}
-\item{Correlations}{a list of correlation matrices. The ith element is the
+\item{simulated_data}{A list of data frames containing the simulated data.}
+\item{original_data}{A data frame with the input data.}
+\item{correlations}{a list of correlation matrices. The ith element is the
 correlation matrix for the ith simulated dataset. The \code{(repn + 1)}the
 (last) element of the list is the average of the correlation matrices.}
-\item{Binary_variables}{character vector listing the binary variables}
-\item{Categorical_variables}{a character vector listing the ordinal
+\item{bin_variables}{character vector listing the binary variables}
+\item{categ_variables }{a character vector listing the ordinal
 categorical variables}
-\item{Covariance_Matrix}{Covariance matrix used when generating observations
+\item{covariance_matrix}{Covariance matrix used when generating observations
 from a multivariate normal distribution.}
-\item{Seed}{Random seed used.}
-\item{Samples_Produced}{Number of rows of each simulated dataset.}
-\item{Sim_Dataset_Number}{Number of simulated datasets produced.}
+\item{seed}{Random seed used.}
+\item{samples_produced}{Number of rows of each simulated dataset.}
+\item{sim_dataset_number}{Number of simulated datasets produced.}
 }
 \description{
 \code{modgo_survival} Create mock dataset from a real one by using

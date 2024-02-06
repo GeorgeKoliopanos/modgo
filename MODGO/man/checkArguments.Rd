@@ -5,7 +5,7 @@
 \title{Check Arguments}
 \usage{
 checkArguments(
-  data,
+  data = NULL,
   ties_method = "max",
   variables = colnames(data),
   bin_variables = NULL,
@@ -28,9 +28,9 @@ checkArguments(
   stop_sim = FALSE,
   new_mean_sd = NULL,
   multi_sugg_prop = NULL,
-  gener_var = FALSE,
-  gener_var_model = NULL,
-  gener_var_lmbds = NULL
+  generalized_mode = FALSE,
+  generalized_mode_model = NULL,
+  generalized_mode_lmbds = NULL
 )
 }
 \arguments{
@@ -116,16 +116,20 @@ must be declared as ROWNAMES in the matrix}
 value=1 for specific binary variables(=name of the vector) that will be
 the close to the proportion of this value in the simulated data sets.}
 
-\item{gener_var}{A logical value indicating if you want to use generalised 
+\item{generalized_mode}{A logical value indicating if you want to use generalized 
 distribution to simulate your data}
 
-\item{gener_var_model}{A matrix that contains two columns named "Variable" and
-"Model". This matrix can be used only if a gener_var_model argument is
+\item{generalized_mode_model}{A matrix that contains two columns named "Variable" and
+"Model". This matrix can be used only if a generalized_mode_model argument is
 provided. It specifies what model should be used for each Variable.
 Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
 e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-The user can select Generalised Poisson model for poisson variabes,
+The user can select Generalised Poisson model for poisson variables,
 but this model cannot be included in bimodal simulation.}
+
+\item{generalized_mode_lmbds}{A matrix that contains lmbds values for each of the
+variables of the data set to be used for either Generalized Lambda Distribution
+Generalized Poisson Distribution or setting up thresholds}
 }
 \description{
 Check that the arguments are following

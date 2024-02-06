@@ -57,15 +57,18 @@
 #'  positive-definiteness in Sigma
 #' @param stop_sim A logical value indicating if the analysis should
 #' stop before simulation and produce only the correlation matrix
-#' @param gener_var A logical value indicating if you want to use generalised 
+#' @param generalized_mode A logical value indicating if you want to use generalized 
 #' distribution to simulate your data
-#' @param gener_var_model A matrix that contains two columns named "Variable" and
-#' "Model". This matrix can be used only if a gener_var_model argument is
+#' @param generalized_mode_model A matrix that contains two columns named "Variable" and
+#' "Model". This matrix can be used only if a generalized_mode_model argument is
 #' provided. It specifies what model should be used for each Variable.
 #' Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
 #' e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-#' The user can select Generalised Poisson model for poisson variabes,
+#' The user can select Generalised Poisson model for poisson variables,
 #' but this model cannot be included in bimodal simulation.
+#' @param generalized_mode_lmbds A matrix that contains lmbds values for each of the
+#' variables of the data set to be used for either Generalized Lambda Distribution
+#' Generalized Poisson Distribution or setting up thresholds
 #' @param new_mean_sd A matrix that contains two columns named
 #' "Mean" and "SD" that the user specifies desired Means and Standard Deviations
 #' in the simulated data sets for specific continues variables. The variables
@@ -74,7 +77,7 @@
 #' @export
 
 checkArguments <-
-  function(data,
+  function(data=NULL,
            ties_method =  "max",
            variables = colnames(data),
            bin_variables = NULL,
@@ -97,9 +100,9 @@ checkArguments <-
            stop_sim = FALSE,
            new_mean_sd = NULL,
            multi_sugg_prop = NULL,
-           gener_var = FALSE,
-           gener_var_model = NULL,
-           gener_var_lmbds = NULL) {
+           generalized_mode = FALSE,
+           generalized_mode_model = NULL,
+           generalized_mode_lmbds = NULL) {
     # Include only selected variables in the original dataset
     data <- data[, variables, drop = FALSE]
     # Find the continuous variables
@@ -119,14 +122,14 @@ checkArguments <-
       if(is.null(sigma)){
         stop("Since Data set is not provided, you need to provide the Correlation Matrix(sigma)")
       }
-      if(gener_var != TRUE){
-        stop("Since Data set is not provided, you need to provide gener_var should be TRUE")
+      if(generalized_mode != TRUE){
+        stop("Since Data set is not provided, you need to provide generalized_mode should be TRUE")
       }
-      if(is.null(gener_var_lmbds)){
-        stop("Since Data set is not provided, you need to provide GeneralizedMatrix(gener_var_lmbds)")
+      if(is.null(generalized_mode_lmbds)){
+        stop("Since Data set is not provided, you need to provide generalized_mode_lmbds")
       }
       if(is.null(n_samples)){
-        stop("Since Data set is not provided, you need to provide GeneralizedMatrix(gener_var_lmbds)")
+        stop("Since Data set is not provided, you need to provide samples size")
       }
     }
     # Check that number of repetitions is an Integer number above 0
@@ -155,6 +158,10 @@ checkArguments <-
     # Check that count variables are part of the catgorical variables
     if (!all(count_variables %in% categ_variables)) {
       stop("Count variables are not part of the categorical variables")
+    }
+    # Check that count variables are used only when generlized mode is true
+    if (!is.null(count_variables) & generalized_mode != TRUE) {
+      stop("Count variables can only be simulated with as Poisson variables when generalized_mode = TRUE")
     }
     # Check that data is a data frame if dataset is offereed
     if (!is.null(data)){
@@ -190,37 +197,37 @@ checkArguments <-
       }
     }
     
-    # Check that gener_var is either TRUE or FALSE
-    if (!(is.logical(gener_var))){
-      stop("gener_var should be a TRUE or FALSE")
+    # Check that generalized_mode is either TRUE or FALSE
+    if (!(is.logical(generalized_mode))){
+      stop("generalized_mode should be a TRUE or FALSE")
     }
-    # Check that gener_var_model is a matrix
-    if ((!is.matrix(gener_var_model) &
-         length(gener_var_model) != 0)) {
-      stop("gener_var_model should be a matrix")
+    # Check that generalized_mode_model is a matrix
+    if ((!is.matrix(generalized_mode_model) &
+         length(generalized_mode_model) != 0)) {
+      stop("generalized_mode_model should be a matrix")
     }
-    # Check that the column names of gener_var_model are Variables and Model
-    if ((!all(colnames(gener_var_model) %in% c("Variables", "Model"))
-         & length(gener_var_model) != 0)) {
-      stop("gener_var_model colnames should be Variables and Model")
+    # Check that the column names of generalized_mode_model are Variables and Model
+    if ((!all(colnames(generalized_mode_model) %in% c("Variables", "Model"))
+         & length(generalized_mode_model) != 0)) {
+      stop("generalized_mode_model colnames should be Variables and Model")
     }
-    # Check that Variables from gener_var_model are part of the 
+    # Check that Variables from generalized_mode_model are part of the 
     # declared variables
-    if (!all(gener_var_model[, "Variables"] %in% variables)) {
-      stop("gener_var_model Variables should be a part of provided variables")
+    if (!all(generalized_mode_model[, "Variables"] %in% variables)) {
+      stop("generalized_mode_model Variables should be a part of provided variables")
     }
-    # Check that Model from gener_var_model are part of the available methods
-    if (!all(gener_var_model[, "Model"] %in% methods)) {
+    # Check that Model from generalized_mode_model are part of the available methods
+    if (!all(generalized_mode_model[, "Model"] %in% methods)) {
       stop(
-        paste0("All gener_var_model Model should be part of "),
+        paste0("All generalized_mode_model Model should be part of "),
         paste(methods, collapse = ", ")
       )
     }
-    # Check that gener_var_model does not contain duplicate variables or 
+    # Check that generalized_mode_model does not contain duplicate variables or 
     # blank values
-    if(length(gener_var_model) != 0){
-      if (length(unique(gener_var_model[, "Variables"])) != dim(gener_var_model)[1]) {
-        stop("gener_var_model Variables contains either duplicate variable or blank value")
+    if(length(generalized_mode_model) != 0){
+      if (length(unique(generalized_mode_model[, "Variables"])) != dim(generalized_mode_model)[1]) {
+        stop("generalized_mode_model Variables contains either duplicate variable or blank value")
       }
     }
     # Check that Sigma is not a 0 length matrix

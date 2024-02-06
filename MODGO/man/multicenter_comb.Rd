@@ -7,7 +7,9 @@
 multicenter_comb(modgo_1, ...)
 }
 \arguments{
-\item{modgo_1}{a list modgo object}
+\item{modgo_1}{a list modgo object.}
+
+\item{...}{multiple modgo object names.}
 }
 \value{
 A modgo object/list.

@@ -4,13 +4,15 @@
 #' to calculate new correlations and visualise the data
 #' 
 #' 
-#' @param modgo_1 a list modgo object
+#' @param modgo_1 a list modgo object.
+#' @param ... multiple modgo object names.
 #' @export
 #' @return A modgo object/list.
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Multi-studies
 #'
-multicenter_comb <- function(modgo_1,...){
+multicenter_comb <- function(modgo_1,
+                             ...){
  
   argg <- c(as.list(environment()), list(...))
   

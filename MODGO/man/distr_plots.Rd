@@ -6,17 +6,27 @@
 \usage{
 distr_plots(
   Modgo_obj,
-  variables = colnames(Modgo_obj[["OriginalData"]]),
+  variables = colnames(Modgo_obj[["original_data"]]),
   sim_dataset = 1,
   wespalette = "Cavalcanti1",
   text_size = 12
 )
 }
 \arguments{
-\item{Modgo_obj}{A list object produced from modgo package}
+\item{Modgo_obj}{a list object produced from modgo package}
+
+\item{variables}{a vector of which variables you want to transform.
+Default:colnames(data)}
+
+\item{sim_dataset}{a number for the simulated data set the user wants to
+display}
+
+\item{wespalette}{a name of the selected wesanderson color pallete}
+
+\item{text_size}{a number for the  size of the annotation text}
 }
 \value{
-A plot.
+a plot.
 }
 \description{
 Plotting the correlation matrices for Original dataset, Simulated and

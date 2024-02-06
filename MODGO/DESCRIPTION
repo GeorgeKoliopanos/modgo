@@ -8,4 +8,24 @@ Description: Generation of mock data from a real dataset using rank normal inver
 Author: Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos 
 Encoding: UTF-8
 RoxygenNote: 7.2.3
-Licence: GPL-2(example)
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+License: GPL (>= 3)
+Depends:
+    R (>= 4.1)
+Imports:
+    ggplot2 (>= 3.4.0),
+    patchwork (>= 1.1.2),
+    wesanderson (>= 0.3.6.9000),
+    Matrix (>= 1.6.1.1),
+    ggcorrplot (>= 0.1.4.1),
+    gridExtra (>= 2.3),
+    psych (>= 2.2.9),
+    GLDEX (>= 2.0.0.9.2),
+    MASS (>= 7.3),
+    gp (>= 1.0),
+    stats,
+    utils,
+    survival

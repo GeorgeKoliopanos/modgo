@@ -6,31 +6,35 @@
 #' 
 #' @param x a vector of z values
 #' @param data a data frame with original variables.
-#' @param n_samples number of samples you need to produce
+#' @param n_samples number of samples you need to produce.
+#' @param lmbds a vector with generalized lambdas values
 #' @return A numeric vector.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
 #' @examples
 #' data("Cleveland",package="modgo")
 #' test_rank <- rbi_normal_transform(Cleveland[,1])
+#' test_generalized_lmbds <- generalizedMatrix(Cleveland, 
+#'                   bin_variables = c("Sex", "HighFastBloodSugar", "CAD"))
 #' test_inv_rank <- general_transform_inv(x = test_rank,
-#'                   x_original = Cleveland[,1])
+#'                   data = Cleveland[,1],
+#'                   n_samples = 100,
+#'                   lmbds = test_generalized_lmbds[,1])
 #' 
 #' 
 #' 
 #' @keywords Generalized Inverse transformation
 #' @export
+#' @import GLDEX
+#' @import gp
+#' @import stats 
 
 
 
-general_transform_inv <- function (x, data = NULL, n_samples, lmbds) {
-  
-  if (!requireNamespace("GLDEX", quietly = TRUE)) {
-    stop(
-      "Package \"GLDEX\" must be installed to use this function.",
-      call. = FALSE
-    )
-  }
+general_transform_inv <- function (x,
+                                   data = NULL,
+                                   n_samples,
+                                   lmbds) {
   
   if (length(na.omit(lmbds)) == 5){
     if(lmbds[5] == 1){model <- "fmkl"} else{model <- "rs"}

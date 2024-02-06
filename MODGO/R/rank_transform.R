@@ -23,7 +23,7 @@
 #' 
 #' @keywords Normal rank transformation
 #' @export
-
+#' @import stats
 
 
 rbi_normal_transform <- function (x, ties_method= c("max", "min", "average")) {

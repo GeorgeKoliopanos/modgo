@@ -12,8 +12,8 @@ generate_simulated_data(
   categ_variables,
   count_variables,
   n_samples,
-  gener_var,
-  gener_var_lmbds,
+  generalized_mode,
+  generalized_mode_lmbds,
   multi_sugg_prop,
   pertr_vec,
   var_infl,
@@ -22,6 +22,8 @@ generate_simulated_data(
 }
 \arguments{
 \item{data}{a data frame with original variables.}
+
+\item{df_sim}{a data frame with simulated values.}
 
 \item{variables}{variables a character vector indicating which
 columns of \code{data} should be used.}
@@ -39,10 +41,10 @@ when using gldex to simulate them.}
 \item{n_samples}{Number of rows of each simulated data set. Default is
 the number of rows of \code{data}.}
 
-\item{gener_var}{A logical value indicating if generalized lambda/poisson
+\item{generalized_mode}{A logical value indicating if generalized lambda/poisson
 distributions or set up thresholds will be used to generate the simulated values}
 
-\item{gener_var_lmbds}{A matrix that contains lmbds values for each of the
+\item{generalized_mode_lmbds}{A matrix that contains lmbds values for each of the
 variables of the data set to be used for either Generalized Lambda Distribution
 Generalized Poisson Distribution or setting up thresholds}
 
@@ -61,14 +63,6 @@ that the user want to perturb and increase their variance}
 original data set and simulations values mimic the perturbed original data
 set.Covariance matrix used for simulation = original data's correlations.
 If FALSE, perturbation is applied to the simulated data sets.}
-
-\item{gener_var_model}{A matrix that contains two columns named "Variable" and
-"Model". This matrix can be used only if a gener_var_model argument is
-provided. It specifies what model should be used for each Variable.
-Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
-e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-The user can select Generalised Poisson model for poisson variabes,
-but this model cannot be included in bimodal simulation}
 }
 \value{
 Simulation Data Frame

@@ -64,16 +64,16 @@
 #'  positive-definiteness in Sigma
 #' @param stop_sim A logical value indicating if the analysis should
 #' stop before simulation and produce only the correlation matrix
-#' @param gener_var A logical value indicating if generalized lambda/poisson
+#' @param generalized_mode A logical value indicating if generalized lambda/poisson
 #'  distributions or set up thresholds will be used to generate the simulated values
-#' @param gener_var_model A matrix that contains two columns named "Variable" and
-#' "Model". This matrix can be used only if a gener_var_model argument is
+#' @param generalized_mode_model A matrix that contains two columns named "Variable" and
+#' "Model". This matrix can be used only if a generalized_mode_model argument is
 #' provided. It specifies what model should be used for each Variable.
 #' Model values should be "rmfmkl", "rprs", "star" or a combination of them,
 #' e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
 #' The user can select Generalised Poisson model for poisson variables,
 #' but this model cannot be included in bimodal simulation
-#' @param gener_var_lmbds A matrix that contains lmbds values for each of the
+#' @param generalized_mode_lmbds A matrix that contains lambdas values for each of the
 #' variables of the data set to be used for either Generalized Lambda Distribution
 #' Generalized Poisson Distribution or setting up thresholds
 #' @param new_mean_sd A matrix that contains two columns named
@@ -81,19 +81,19 @@
 #' in the simulated data sets for specific continues variables. The variables
 #' must be declared as ROWNAMES in the matrix
 #' @return A list with the following components:
-#' \item{SimulatedData}{A list of data frames containing the simulated data.}
-#' \item{OriginalData}{A data frame with the input data.}
-#' \item{Correlations}{a list of correlation matrices. The ith element is the
+#' \item{simulated_data}{A list of data frames containing the simulated data.}
+#' \item{original_data}{A data frame with the input data.}
+#' \item{correlations}{a list of correlation matrices. The ith element is the
 #' correlation matrix for the ith simulated dataset. The \code{(repn + 1)}the
 #' (last) element of the list is the average of the correlation matrices.}
-#' \item{Binary_variables}{character vector listing the binary variables}
-#' \item{Categorical_variables}{a character vector listing the ordinal
+#' \item{bin_variables}{character vector listing the binary variables}
+#' \item{categ_variables }{a character vector listing the ordinal
 #' categorical variables}
-#' \item{Covariance_Matrix}{Covariance matrix used when generating observations
+#' \item{covariance_matrix}{Covariance matrix used when generating observations
 #' from a multivariate normal distribution.}
-#' \item{Seed}{Random seed used.}
-#' \item{Samples_Produced}{Number of rows of each simulated dataset.}
-#' \item{Sim_Dataset_Number}{Number of simulated datasets produced.}
+#' \item{seed}{Random seed used.}
+#' \item{samples_produced}{Number of rows of each simulated dataset.}
+#' \item{sim_dataset_number}{Number of simulated datasets produced.}
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords mock data generation
 #' @references Koliopanos, G. and Ojeda, F. and Ziegler Andreas (2023),
@@ -106,6 +106,8 @@
 #'      categ_variables =c("Chestpaintype"))
 #' @export
 #' @importFrom Matrix nearPD
+#' @importFrom MASS mvrnorm
+#' @import stats
 
 modgo <-
   function(data,
@@ -131,9 +133,9 @@ modgo <-
            stop_sim = FALSE,
            new_mean_sd = NULL,
            multi_sugg_prop = NULL,
-           gener_var = FALSE,
-           gener_var_model = NULL,
-           gener_var_lmbds = NULL) {
+           generalized_mode = FALSE,
+           generalized_mode_model = NULL,
+           generalized_mode_lmbds = NULL) {
     if (!is.na(seed)) {
       # Setting Seed
       set.seed(seed)
@@ -214,12 +216,12 @@ modgo <-
       }
     }
     
-    # Prepare gener_var four moments
-    if (is.null(gener_var_lmbds) && gener_var == TRUE) {
-      gener_var_lmbds <- generalizedMatrix(data,
+    # Prepare generalized_mode four moments
+    if (is.null(generalized_mode_lmbds) && generalized_mode == TRUE) {
+      generalized_mode_lmbds <- generalizedMatrix(data,
                                            variables,
                                            bin_variables,
-                                           gener_var_model,
+                                           generalized_mode_model,
                                            multi_sugg_prop)
     }
     
@@ -241,8 +243,8 @@ modgo <-
                               categ_variables = categ_variables,
                               count_variables = count_variables,
                               n_samples = n_samples,
-                              gener_var = gener_var,
-                              gener_var_lmbds = gener_var_lmbds,
+                              generalized_mode = generalized_mode,
+                              generalized_mode_lmbds = generalized_mode_lmbds,
                               multi_sugg_prop = NULL,
                               pertr_vec = NULL,
                               var_infl = NULL,
@@ -302,8 +304,8 @@ modgo <-
                               categ_variables = categ_variables,
                               count_variables = count_variables,
                               n_samples = n_samples,
-                              gener_var = gener_var,
-                              gener_var_lmbds = gener_var_lmbds,
+                              generalized_mode = generalized_mode,
+                              generalized_mode_lmbds = generalized_mode_lmbds,
                               multi_sugg_prop = NULL,
                               pertr_vec = NULL,
                               var_infl = NULL,
@@ -348,8 +350,8 @@ modgo <-
                                 categ_variables = categ_variables,
                                 count_variables = count_variables,
                                 n_samples = n_samples,
-                                gener_var = gener_var,
-                                gener_var_lmbds = gener_var_lmbds,
+                                generalized_mode = generalized_mode,
+                                generalized_mode_lmbds = generalized_mode_lmbds,
                                 multi_sugg_prop = multi_sugg_prop,
                                 pertr_vec = pertr_vec,
                                 var_infl = var_infl,
@@ -435,20 +437,20 @@ modgo <-
         n_samples,
         nrep,
         pre_sim_sigma,
-        gener_var_lmbds
+        generalized_mode_lmbds
       )
       names(results) <- c(
-        "SimulatedData",
-        "OriginalData",
-        "Correlations",
-        "Binary_variables",
-        "Categorical_variables",
-        "Covariance_Matrix",
-        "Seed",
-        "Samples_Produced",
-        "Sim_Dataset_Number",
-        "PreSim_Sigma",
-        "Generalized_Lambdas"
+        "simulated_data",
+        "original_data",
+        "correlations",
+        "bin_variables",
+        "categ_variables",
+        "covariance_matrix",
+        "seed",
+        "samples_produced",
+        "sim_dataset_number",
+        "presim_sigma",
+        "generalized_mode_lmbds"
       )
     } else{
       results <- list(
@@ -458,17 +460,17 @@ modgo <-
         Sigma,
         seed,
         pre_sim_sigma,
-        gener_var_lmbds
+        generalized_mode_lmbds
       )
       names(results) <-
         c(
-          "OriginalData",
-          "Binary_variables",
-          "Categorical_variables",
-          "Covariance_Matrix",
-          "Seed",
-          "PreSim_Sigma",
-          "Generalized_Lambdas"
+          "original_data",
+          "bin_variables",
+          "categ_variables",
+          "covariance_matrix",
+          "seed",
+          "presim_sigma",
+          "generalized_mode_lmbds"
         )
       
     }

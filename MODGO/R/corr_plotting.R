@@ -27,17 +27,16 @@
 
 corr_plots <- function(Modgo_obj,
                        sim_dataset = 1,
-                       variables = colnames(Modgo_obj[["SimulatedData"]][[1]])) {
-  if (!all(variables %in% colnames(Modgo_obj[["SimulatedData"]][[1]]))) {
+                       variables = colnames(Modgo_obj[["simulated_data"]][[1]])) {
+  if (!all(variables %in% colnames(Modgo_obj[["simulated_data"]][[1]]))) {
     stop("Not all variables are in column names of data ")
     
   }
   
-  
-  cor1 <- as.matrix(Modgo_obj$PreSim_Sigma[variables,variables])
+  cor1 <- as.matrix(Modgo_obj$presim_sigma[variables,variables])
   cor2 <-
-    cor(as.matrix(Modgo_obj[["SimulatedData"]][[sim_dataset]][, variables]))
-  cor3 <- Modgo_obj[["Correlations"]][["Mean"]][variables, variables]
+    cor(as.matrix(Modgo_obj[["simulated_data"]][[sim_dataset]][, variables]))
+  cor3 <- Modgo_obj[["correlations"]][["Mean"]][variables, variables]
   cor4 <- cor1 - cor2
   
   

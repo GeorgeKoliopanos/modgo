@@ -22,10 +22,16 @@
 #' 
 #' @keywords Inverse transformation
 #' @export
+#' @import stats
 
  
 
-rbi_normal_transform_inv <- function (x, x_original) {
+rbi_normal_transform_inv <- function (x,
+                                      x_original) {
   #type = 1 in quantile gives the inverse of the empirical cdf of x_original.
-  quantile(x_original, probs = pnorm(x), type = 1, na.rm = TRUE, names = FALSE)
+  quantile(x_original,
+           probs = pnorm(x),
+           type = 1,
+           na.rm = TRUE,
+           names = FALSE)
 }

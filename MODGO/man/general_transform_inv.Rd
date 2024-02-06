@@ -11,7 +11,9 @@ general_transform_inv(x, data = NULL, n_samples, lmbds)
 
 \item{data}{a data frame with original variables.}
 
-\item{n_samples}{number of samples you need to produce}
+\item{n_samples}{number of samples you need to produce.}
+
+\item{lmbds}{a vector with generalized lambdas values}
 }
 \value{
 A numeric vector.
@@ -24,8 +26,12 @@ percentile functions
 \examples{
 data("Cleveland",package="modgo")
 test_rank <- rbi_normal_transform(Cleveland[,1])
+test_generalized_lmbds <- generalizedMatrix(Cleveland, 
+                  bin_variables = c("Sex", "HighFastBloodSugar", "CAD"))
 test_inv_rank <- general_transform_inv(x = test_rank,
-                  x_original = Cleveland[,1])
+                  data = Cleveland[,1],
+                  n_samples = 100,
+                  lmbds = test_generalized_lmbds[,1])
 
 
 

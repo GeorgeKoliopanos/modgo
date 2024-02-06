@@ -8,17 +8,20 @@ generalizedMatrix(
   data,
   variables = colnames(data),
   bin_variables = NULL,
-  gener_var_model = NULL,
+  generalized_mode_model = NULL,
   multi_sugg_prop = NULL
 )
 }
 \arguments{
 \item{data}{a data frame with original variables.}
 
+\item{variables}{a vector of which variables you want to transform.
+Default:colnames(data)}
+
 \item{bin_variables}{a character vector listing the binary variables.}
 
-\item{gener_var_model}{A matrix that contains two columns named "Variables" and
-"Model". This matrix can be used only if a gener_var_model argument is
+\item{generalized_mode_model}{A matrix that contains two columns named "Variables" and
+"Model". This matrix can be used only if a generalized_mode_model argument is
 provided. It specifies what model should be used for each Variable.
 Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
 e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
@@ -34,6 +37,16 @@ A numeric matrix
 }
 \description{
 Prepare the four moments matrix for GLD and GPD
+}
+\examples{
+data("Cleveland",package="modgo")
+Variables <- c("Age","STDepression")
+Model <- c("rprs", "star-rmfmkl")
+model_matrix <- cbind(Variables,
+                     Model)
+test_modgo <- generalizedMatrix(data = Cleveland,
+     generalized_mode_model = model_matrix,
+     bin_variables = c("CAD","HighFastBloodSugar","Sex","ExInducedAngina"))
 }
 \author{
 Francisco M. Ojeda, George Koliopanos

@@ -3,8 +3,14 @@
 #' Plotting the correlation matrices for Original dataset, Simulated and
 #' Mean correlation matrix
 #' 
-#' @param Modgo_obj A list object produced from modgo package
-#' @return A plot.
+#' @param Modgo_obj a list object produced from modgo package
+#' @param variables a vector of which variables you want to transform.
+#' Default:colnames(data)
+#' @param sim_dataset a number for the simulated data set the user wants to
+#' display
+#' @param  wespalette a name of the selected wesanderson color pallet
+#' @param  text_size a number for the  size of the annotation text
+#' @return a plot.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
 #' @examples 
@@ -21,13 +27,15 @@
 #' @import wesanderson
 
 distr_plots <- function(Modgo_obj,
-                        variables=colnames(Modgo_obj[["OriginalData"]]),
-                        sim_dataset=1,wespalette="Cavalcanti1",text_size=12) {
+                        variables=colnames(Modgo_obj[["original_data"]]),
+                        sim_dataset=1,
+                        wespalette="Cavalcanti1",
+                        text_size=12) {
   
-  if(is.null(Modgo_obj[["OriginalData"]])){
+  if(is.null(Modgo_obj[["original_data"]])){
     stop("Distr_plots cannot run without providing an original dataset in the main modgo function")
   }
-  if (!all(variables %in% colnames(Modgo_obj[["OriginalData"]]))){
+  if (!all(variables %in% colnames(Modgo_obj[["original_data"]]))){
     
     stop("Not all variables are in column names of data ")
     
@@ -36,14 +44,14 @@ distr_plots <- function(Modgo_obj,
   plotlist <- list()
   
   for (i in variables){
-   comb_data <- c(Modgo_obj[["OriginalData"]][[i]],
-                       Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])
-    dataset <- c(rep(1,length(Modgo_obj[["OriginalData"]][[i]])),
-                     rep(0,length(Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])))
+   comb_data <- c(Modgo_obj[["original_data"]][[i]],
+                       Modgo_obj[["simulated_data"]][[sim_dataset]][[i]])
+    dataset <- c(rep(1,length(Modgo_obj[["original_data"]][[i]])),
+                     rep(0,length(Modgo_obj[["simulated_data"]][[sim_dataset]][[i]])))
     df <- as.data.frame(cbind(comb_data,dataset))
     df$dataset <- as.factor(df$dataset)
-    if(i %in% Modgo_obj[["Binary_variables"]] || 
-       i %in% Modgo_obj[["Categorical_variables"]]){
+    if(i %in% Modgo_obj[["bin_variables"]] || 
+       i %in% Modgo_obj[["categ_variables"]]){
     p <-ggplot2::ggplot(df,aes(y=dataset)) + 
       geom_bar(aes(fill=as.factor(comb_data))) +
       scale_y_discrete(labels= c("Simulated","Original")) +
@@ -56,10 +64,10 @@ distr_plots <- function(Modgo_obj,
       ylab(label=i) +
       xlab(label="")
     } else{
-      comb_data <- c(Modgo_obj[["OriginalData"]][[i]],
-                     Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])
-      dataset <- c(rep(0,length(Modgo_obj[["OriginalData"]][[i]])),
-                   rep(1,length(Modgo_obj[["SimulatedData"]][[sim_dataset]][[i]])))
+      comb_data <- c(Modgo_obj[["original_data"]][[i]],
+                     Modgo_obj[["simulated_data"]][[sim_dataset]][[i]])
+      dataset <- c(rep(0,length(Modgo_obj[["original_data"]][[i]])),
+                   rep(1,length(Modgo_obj[["simulated_data"]][[sim_dataset]][[i]])))
       df <- as.data.frame(cbind(comb_data,dataset))
       df$dataset <- as.factor(df$dataset)
      p <-ggplot2::ggplot(df,aes(x=dataset, y=comb_data,color=dataset)) + 

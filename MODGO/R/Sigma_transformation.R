@@ -22,6 +22,7 @@
 #'@importFrom psych polychoric
 #'@importFrom psych tetrachoric
 #'@importFrom psych polyserial
+#'@importFrom utils capture.output
 
 Sigma_transformation <- function(data,
                                  data_z,
