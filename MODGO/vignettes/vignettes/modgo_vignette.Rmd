@@ -1,0 +1,267 @@
+---
+title: "Modgo simulation"
+output:
+  html_vignette:
+    self_contained: yes
+description: |
+  Modgo Vignette demonstrates how to use the package to simulate a data set, 
+  and also to exploit the main capabilities of the package
+  
+vignette: >
+  %\VignetteIndexEntry{Modgo simulation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: bibliography.bib
+---
+```{r include = FALSE}
+knitr::opts_chunk$set(fig.height = 6, fig.width = 8, dpi = 90,fig.pos = "H")
+counter <- 1
+```
+
+
+```{r setup, warning=FALSE, include = FALSE}
+library(modgo)
+library(wesanderson)
+library(ggplot2)
+library(patchwork)
+library(survival)
+```
+# 1. Default *modgo* simulation
+
+For illustration, we selected the Cleveland Clinic Heart Disease Data set from the University of California in Irvine (UCI) machine learning data repository [@Dua2019]. 
+Below, we are using eleven variables, five of which are continuous, four are dichotomous, and two categorical variables.
+```{r data}
+data("Cleveland", package = "modgo")
+```
+
+```{r basic_arguments}
+# Specifying dichotomous and ordinal categorical variables
+binary_variables <- c("Sex","HighFastBloodSugar","CAD","ExInducedAngina")
+categorical_variables <- c("Chestpaintype","RestingECG")
+nrep <- 500
+plot_variables <- c("Age", "STDepression", binary_variables[c(1,3)], categorical_variables)
+```
+
+In this section, we run *modgo* with his default settings. For *modgo* to produce
+results that mimic the original data set efficiently, user needs to specify dichotomous and ordinal categorical variables. Variables will be considered as continuous, otherwise. All *modgo* runs in this and the following sections will produce 500 data sets with the specification nrep = 500; the default is 100. 
+
+Figure 1 shows the correlation plots for the default *modgo* run, and Figure 2 displays the distribution plots for the original data set and one simulated data set. The default displayed simulated data set is the first one.
+Moreover, for all the plots a set of variables are used.
+```{r default_test}
+test <- modgo(data = Cleveland,
+              bin_variables = binary_variables,
+              categ_variables = categorical_variables,
+              nrep = nrep)
+```
+
+
+ 
+
+```{r correlation_default,echo=FALSE, fig.cap=paste0("Figure ",counter,": Correlation plots for a default *modgo* run.")}
+corr_plots(test, variables = plot_variables)
+counter <- counter  + 1
+```
+
+ 
+```{r distr_default,echo=FALSE, fig.cap=paste0("Figure ",counter,": Distribution plots for a default *modgo* run.")}
+distr_plots(test, variables = plot_variables)
+counter <- counter  + 1
+```
+
+
+# 2. Generalized lambda *modgo* simulation
+
+One additional feature that *modgo* offers is simulating a data set using
+Generalized Lambdas Distribution().  
+GLD method allow the user to simulate values that are not present in the
+original data set, since the default method uses only values from the original
+data.  
+GLD method is based in the GLDEX package [@SteveSU].
+
+
+
+```{r GLD_run}
+test_GLD <- modgo(data = Cleveland,
+                  bin_variables = binary_variables,
+                  categ_variables = categorical_variables,
+                  generalized_mode = TRUE,
+                  nrep = nrep)
+```
+
+
+
+```{r correlation_GLD, echo=FALSE, fig.cap=paste0("Figure ",counter,": Correlation plots for Generalized Lambda Distribtion *modgo* run")}
+corr_plots(test_GLD, variables = plot_variables)
+counter <- counter  + 1
+```
+
+```{r distr_GLD, echo=FALSE, fig.cap=paste0("Figure ",counter,": Distribution plot for Generalized Lambda Distribtion *modgo* run")}
+distr_plots(test_GLD, variables = plot_variables)
+counter <- counter  + 1
+```
+
+GLDEX offers 3 basic models for calclualting the four Lambda's for each
+distribution called rmfmkl(default model), rprs, star(reference), that can be also combined in
+for a bi-modal estimation.  
+We offer the possibility to specify your desired model for each variable of the 
+data set.  
+Next, we demonstrate how to specify the desired GLD models.
+
+
+
+```{r arguments_GLD_def_model}
+Variables <- c("Age","STDepression")
+Model <- c("rprs", "star-rmfmkl")
+model_matrix <- cbind(Variables,
+                      Model)
+```
+
+```{r GLD_run_def_model}
+test_GLD_define_model <- modgo(data = Cleveland,
+                  bin_variables = binary_variables,
+                  categ_variables = categorical_variables,
+                  generalized_mode = TRUE,
+                  generalized_mode_model = model_matrix,
+                  nrep = nrep)
+```
+
+
+ 
+```{r correlation_GLD_def_model, echo=FALSE, fig.cap=paste0("Figure ",counter,": Correlation plots for Generalized Lambda Distribtion *modgo* run with specified GLD models")}
+corr_plots(test_GLD_define_model, variables = plot_variables)
+counter <- counter  + 1
+```
+
+```{r distr_GLD_def_model,echo=FALSE, fig.cap=paste0("Figure ",counter,": Distribution plots for Generalized Lambda Distribtion *modgo* run with specified GLD models")}
+distr_plots(test_GLD_define_model, variables = plot_variables)
+counter <- counter  + 1
+```
+  
+Looking at the distribution plots above we can see that in some variables like
+STDepression, GLD method can create values that are not present in the original
+data set and also are very extreme.
+
+There is also the option to calculate Generalized Lambdas outside of *modgo*
+function and then use it as an argument to a later *modgo* run.
+
+```{r GLD_run_def_model_set_lambdas}
+gener_lambdas_matrix <- generalizedMatrix(data = Cleveland,
+                                          generalized_mode_model = model_matrix,
+                                          bin_variables = binary_variables) 
+test_GLD_define_model_set_lambdas <- modgo(data = Cleveland,
+                  bin_variables = binary_variables,
+                  categ_variables = categorical_variables,
+                  generalized_mode = TRUE,
+                  generalized_mode_lmbds = gener_lambdas_matrix,
+                  nrep = nrep)
+```
+
+Finally, one interesting feature that it is offered to *modgo* with the help of 
+GLD method is the ability to simulate data set without offering the original data.
+To run *modgo* without a data set this the user needs:  
+1) Correlation matrix of the data set  
+2) Generalized matrix of the data set  
+3) Sample size of the simulated data set  
+4) Variable names  
+Below, we present an example of this case.
+```{r GLD_run_no_data_set}
+# Necessary arguments
+gener_lambdas_matrix <- generalizedMatrix(data = Cleveland,
+                                          generalized_mode_model = model_matrix,
+                                          bin_variables = binary_variables)
+sigma <- cor(Cleveland)
+variables_names <- colnames(sigma)
+sample_size <- 100
+
+test_GLD_no_data_set <- modgo(data = NULL,
+                              variables = variables_names,
+                              bin_variables = binary_variables,
+                              categ_variables = categorical_variables,
+                              sigma = sigma,
+                              generalized_mode = TRUE,
+                              generalized_mode_lmbds = gener_lambdas_matrix,
+                              n_samples = sample_size,
+                              nrep = nrep)
+
+
+```
+
+
+```{r correlation_GLD_run_no_data_set, echo=FALSE, fig.cap=paste0("Figure ",counter,": Correlation plots for Generalized Lambda Distribtion *modgo* run without providing a data set")}
+corr_plots(test_GLD_no_data_set, variables = plot_variables)
+counter <- counter  + 1
+```
+
+# 3. Survival example
+
+For illustration of survival variable simulation, we selected the cancer data set
+provided by *survival* package [@survival-package]. Cancer data set consists of 167 samples and
+10 variables. To set up modgo_survival(), the user needs to specify along with 
+the other arguments of *modgo* a status and a time variable.
+```{r survival_data_set}
+# cancer prepare
+data("cancer", package = "survival")
+
+cancer <- na.omit(cancer)
+cancer$sex <- cancer$sex - 1
+cancer$status <- cancer$status - 1
+
+time_var_cancer <- "time"
+status_var_cancer <- "status"
+bin_var_cancer <- c("status", "sex")
+cat_var_list_cancer <- c("ph.ecog")
+
+plot_variables_surv <- colnames(cancer)[1:6]
+
+```
+
+modgo_survival function splits the data set in two data sets according to
+the status variable and then it simulates each separately thought Generalized
+Lambdas Distribution method. User can specify for each data set which GLDEX
+model should be used(default = "rprs").
+
+```{r survival_data_set_run}
+# Survival run
+test_surv <- modgo_survival(data = cancer,
+               surv_method = 1,
+               bin_variables = bin_var_cancer,
+               categ_variables = cat_var_list_cancer,
+               event_variable = status_var_cancer,
+               time_variable = time_var_cancer,
+               generalized_mode_model_no_event = "rmfmkl",
+               generalized_mode_model_event = "rprs")
+
+```
+
+```{r survival_data_set_corr, echo=FALSE, fig.cap=paste0("Figure ",counter,": Correlation plots for modgo_survival run")}
+corr_plots(test_surv, variables = plot_variables_surv)
+counter <- counter  + 1
+```
+
+```{r survival_data_set_distr, echo=FALSE, fig.cap=paste0("Figure ",counter,": Distribution plots for modgo_survival run")}
+distr_plots(test_surv, variables = plot_variables_surv)
+counter <- counter  + 1
+```
+
+In the upcoming plot, the surv_fit() curves from the *survival* package for both
+original and simulate data are depicted.  
+```{r survival_data_set_coxplots, fig.cap=paste0("Figure ",counter,": Survival fit curves plot for modgo_survival run")}
+data_set_info <- c(rep(0, dim(test_surv$original_data)[1]),
+                   rep(1, dim(test_surv$simulated_data[[1]])[1]))
+combine_data_set <- rbind(test_surv$original_data,
+                          test_surv$simulated_data[[1]])
+combine_data_set <- cbind(combine_data_set,
+                          data_set_info)
+fit <- survfit(Surv(time, status) ~ data_set_info,
+               data=combine_data_set)
+plot(fit,
+     col=1:2)
+legend(700, 1,
+       c("Original data set", "Simulate data set"),
+       lty=c(1,1),
+       col=c(1,2),
+       bty='n',
+       lwd=2)
+```
+
+# References
