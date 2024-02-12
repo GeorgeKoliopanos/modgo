@@ -25,7 +25,7 @@ Default:colnames(data)}
 provided. It specifies what model should be used for each Variable.
 Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
 e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-The user can select Generalised Poisson model for poisson variabes,
+The user can select Generalized Poisson model for poisson variables,
 but this model cannot be included in bimodal simulation}
 
 \item{multi_sugg_prop}{A named vector that provides a  proportion of

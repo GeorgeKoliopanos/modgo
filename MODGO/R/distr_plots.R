@@ -1,13 +1,13 @@
-#' Distribution plotting
+#' Plots distribution of original and simulated data
 #' 
-#' Plotting the correlation matrices for Original dataset, Simulated and
-#' Mean correlation matrix
+#' Produces a graphical display of the distribution of the variables
+#' of the original dataset and a single simulated dataset for an object 
+#' returned by \code{\link[modgo]{modgo}}.
 #' 
-#' @param Modgo_obj a list object produced from modgo package
-#' @param variables a vector of which variables you want to transform.
-#' Default:colnames(data)
-#' @param sim_dataset a number for the simulated data set the user wants to
-#' display
+#' For continuous variables box-and-whisker plots are displayed, while 
+#' categorical variables bar charts are produced.
+#' 
+#' @inheritParams corr_plots
 #' @param  wespalette a name of the selected wesanderson color pallet
 #' @param  text_size a number for the  size of the annotation text
 #' @return a plot.
@@ -25,7 +25,6 @@
 #' @import ggplot2
 #' @importFrom gridExtra grid.arrange
 #' @import wesanderson
-
 distr_plots <- function(Modgo_obj,
                         variables=colnames(Modgo_obj[["original_data"]]),
                         sim_dataset=1,

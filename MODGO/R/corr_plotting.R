@@ -1,12 +1,15 @@
-#' Correlations plotting
+#' Plots correlation matrix of original and simulated data
 #'
-#' Plotting the correlation matrixed for Original dataset, Simulated and
-#' Mean correlation matrix
-#'
-#' @param Modgo_obj A list object produced from modgo package
-#' @param sim_dataset A number indicating the number of the simulated dataset
-#' @param variables A character list listing the name of the requested variables
-#' @return A plot.
+#' Produces a graphical display of the correlation matrix of the original 
+#' dataset, a  single simulated  dataset and also of the  average of the 
+#' correlation matrices across all simulations for an object returned by 
+#' \code{\link[modgo]{modgo}}.
+#' @param Modgo_obj An object returned by \code{\link[modgo]{modgo}}.
+#' @param sim_dataset Number indicating the simulated dataset in 
+#' \code{Modgo_obj} to be used in plots. 
+#' @param variables A character vector indicating the columns in the data to 
+#' be used in plots.
+#' @return A patchwork object created by \code{\link[patchwork]{wrap_plots}}.
 #' @author Francisco M. Ojeda, George Koliopanos
 #'
 #' @examples

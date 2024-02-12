@@ -21,7 +21,7 @@ Default:colnames(data)}
 \item{sim_dataset}{a number for the simulated data set the user wants to
 display}
 
-\item{wespalette}{a name of the selected wesanderson color pallete}
+\item{wespalette}{a name of the selected wesanderson color pallet}
 
 \item{text_size}{a number for the  size of the annotation text}
 }
