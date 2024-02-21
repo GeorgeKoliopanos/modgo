@@ -2,7 +2,7 @@
 % Please edit documentation in R/distr_plots.R
 \name{distr_plots}
 \alias{distr_plots}
-\title{Distribution plotting}
+\title{Plots distribution of original and simulated data}
 \usage{
 distr_plots(
   Modgo_obj,
@@ -13,13 +13,13 @@ distr_plots(
 )
 }
 \arguments{
-\item{Modgo_obj}{a list object produced from modgo package}
+\item{Modgo_obj}{An object returned by \code{\link[modgo]{modgo}}.}
 
-\item{variables}{a vector of which variables you want to transform.
-Default:colnames(data)}
+\item{variables}{A character vector indicating the columns in the data to 
+be used in plots.}
 
-\item{sim_dataset}{a number for the simulated data set the user wants to
-display}
+\item{sim_dataset}{Number indicating the simulated dataset in 
+\code{Modgo_obj} to be used in plots.}
 
 \item{wespalette}{a name of the selected wesanderson color pallet}
 
@@ -29,8 +29,13 @@ display}
 a plot.
 }
 \description{
-Plotting the correlation matrices for Original dataset, Simulated and
-Mean correlation matrix
+Produces a graphical display of the distribution of the variables
+of the original dataset and a single simulated dataset for an object 
+returned by \code{\link[modgo]{modgo}}.
+}
+\details{
+For continuous variables box-and-whisker plots are displayed, while 
+categorical variables bar charts are produced.
 }
 \examples{
 data("Cleveland",package="modgo")

@@ -2,7 +2,7 @@
 % Please edit documentation in R/corr_plotting.R
 \name{corr_plots}
 \alias{corr_plots}
-\title{Correlations plotting}
+\title{Plots correlation matrix of original and simulated data}
 \usage{
 corr_plots(
   Modgo_obj,
@@ -11,18 +11,22 @@ corr_plots(
 )
 }
 \arguments{
-\item{Modgo_obj}{A list object produced from modgo package}
+\item{Modgo_obj}{An object returned by \code{\link[modgo]{modgo}}.}
 
-\item{sim_dataset}{A number indicating the number of the simulated dataset}
+\item{sim_dataset}{Number indicating the simulated dataset in 
+\code{Modgo_obj} to be used in plots.}
 
-\item{variables}{A character list listing the name of the requested variables}
+\item{variables}{A character vector indicating the columns in the data to 
+be used in plots.}
 }
 \value{
-A plot.
+A patchwork object created by \code{\link[patchwork]{wrap_plots}}.
 }
 \description{
-Plotting the correlation matrixed for Original dataset, Simulated and
-Mean correlation matrix
+Produces a graphical display of the correlation matrix of the original 
+dataset, a  single simulated  dataset and also of the  average of the 
+correlation matrices across all simulations for an object returned by 
+\code{\link[modgo]{modgo}}.
 }
 \examples{
 
