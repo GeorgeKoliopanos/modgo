@@ -1,14 +1,15 @@
-#' Inverse of rank based inverse normal transformation
+#' Inverse of rank-based inverse normal transformation
 #' 
-#' Transforms a vector \code{x} using the inverse of rank based inverse normal 
+#' Transforms a vector \code{x} using the inverse of a rank-based inverse normal 
 #' transformation associated with a given vector \code{x_original}. This inverse
 #' is defined as \eqn{F_n^{-1}\Phi(x)}, where \eqn{F_n^{-1}} is the inverse 
 #' empirical cumulative distribution function of \code{x_original} and 
 #' \eqn{\Phi} is the cumulative distribution function of a standard normal 
 #' random variable.
 #' 
-#' @param x a numeric vector. 
-#' @param x_original a numeric vector from the original dataset
+#' @param x a numeric vector to which the inverse of a rank-based inverse normal 
+#' transformation associated with \code{x_original} will be applied.
+#' @param x_original a numeric vector.
 #' @return A numeric vector.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 

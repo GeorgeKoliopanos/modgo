@@ -2,16 +2,15 @@
 #'
 #' Rows: samples (303) x Columns: Variables (11)
 #' 
-#' Cleveland Clinic Heart Disease Data set from the University of 
-#' California in Irvine (UCI) machine learning data repository 
-#' 
-#' Dua, Dheeru, and Casey Graff. 2017. "UCI Machine Learning Repository." 
-#' University of California, Irvine,School of Information;
-#' Computer Sciences. http://archive.ics.uci.edu/ml
-#' 
-#' Selected 11 variables and impute missing values
-#' Imputation method is described in the Supplementary file 1 of the 
-#' modgo paper
+#' Selected 11 variables from Cleveland Clinic Heart Disease Dataset  
+#' (Detrano et al. (1989)).  The dataset was dowloaded from the 
+#' University of California in Irvine machine learning data repository
+#' (Dua et al. (2019)).  
+#'  
+#' Missing values were imputed. For each continuous variable values were drawn
+#' from a normal distribution using the sample mean and standard deviation 
+#' computed on the complete observations. For categorical variables values were 
+#' drawn from the empirical distribution of the complete observations.
 #' 
 #' @name Cleveland
 #' 
@@ -27,8 +26,11 @@
 #' @examples
 #' data("Cleveland", package="modgo")
 #' 
-#' @references Detrano, R. et al. (1989) ``International application of a new 
-#' probability algorithm for the diagnosis of coronary artery disease,''
-#' \emph{The American Journal of Cardiology}, \strong{64}(5), 304-310.
+#' @references Detrano, R. et al. (1989). International application of a new 
+#' probability algorithm for the diagnosis of coronary artery disease.
+#' \emph{The American Journal of Cardiology}, 64(5), 304-310.
+#' @references Dua, D. and Graff C (2019). UCI machine learning repository. 
+#' Irvine: University of California, School of Information and Computer 
+#' Science. http://archive.ics.uci.edu/ml. Accessed March 20th 2023.
 
 NULL

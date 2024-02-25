@@ -2,20 +2,21 @@
 % Please edit documentation in R/inverse_transformation.R
 \name{rbi_normal_transform_inv}
 \alias{rbi_normal_transform_inv}
-\title{Inverse of rank based inverse normal transformation}
+\title{Inverse of rank-based inverse normal transformation}
 \usage{
 rbi_normal_transform_inv(x, x_original)
 }
 \arguments{
-\item{x}{a numeric vector.}
+\item{x}{a numeric vector to which the inverse of a rank-based inverse normal 
+transformation associated with \code{x_original} will be applied.}
 
-\item{x_original}{a numeric vector from the original dataset}
+\item{x_original}{a numeric vector.}
 }
 \value{
 A numeric vector.
 }
 \description{
-Transforms a vector \code{x} using the inverse of rank based inverse normal 
+Transforms a vector \code{x} using the inverse of a rank-based inverse normal 
 transformation associated with a given vector \code{x_original}. This inverse
 is defined as \eqn{F_n^{-1}\Phi(x)}, where \eqn{F_n^{-1}} is the inverse 
 empirical cumulative distribution function of \code{x_original} and 

@@ -22,14 +22,18 @@ knitr::opts_chunk$set(fig.width = 8,
 counter <- 0
 ```
 
+This vignette demonstrates the basic usage of *modgo* to simulate a data set.
 
 ```{r setup, warning=FALSE, include = FALSE}
 library(survival)
 ```
 # 1. Default *modgo* simulation
 
-For illustration, we selected the Cleveland Clinic Heart Disease Data set from the University of California in Irvine (UCI) machine learning data repository [@Dua2019]. 
-Below, we are using eleven variables, five of which are continuous, four are dichotomous, and two categorical variables.
+For illustration purposes, we use the Cleveland Clinic Heart Disease Data set 
+from the University of California in Irvine (UCI) machine learning data 
+repository [@Dua2019]. We use five continuous variables, four dichotomous 
+variables, and two ordinal categorical with more than two categories.
+
 ```{r data}
 library(modgo)
 data("Cleveland", package = "modgo")
@@ -43,10 +47,16 @@ nrep <- 500
 plot_variables <- c("Age", "STDepression", binary_variables[c(1,3)], categorical_variables)
 ```
 
-In this section, we run *modgo* with its default settings. For *modgo* to produce
-results that mimic the original data set efficiently, user needs to specify dichotomous and ordinal categorical variables. Variables will be considered as continuous, otherwise. All *modgo* runs in this and the following sections will produce 500 data sets with the specification nrep = 500; the default is 100. 
+In this section, we run *modgo* mostly with its default settings. The user needs 
+to specify dichotomous and ordinal categorical variables, otherwise the variables 
+specified in the parameter `variables` will be treated as continuous. All 
+*modgo* runs in this and the following sections will produce 500 data sets. 
+This is achieved by specifying `nrep = 500`, the default being 100. 
 
-Figure 1 shows the correlation plots for the default *modgo* run, and Figure 2 displays the distribution plots for the original data set and one simulated data set. The default displayed simulated data set is the first one.
+Figure 1 shows the correlation plots, a graphical display of the 
+Pearson correlation matrix, for the default *modgo* run, and Figure 2 displays 
+distribution plots for the original data set and a single simulated data set. 
+Per default the first simulated data set is used.
 Moreover, for all the plots a set of variables are used.
 ```{r default_test}
 test <- modgo(data = Cleveland,

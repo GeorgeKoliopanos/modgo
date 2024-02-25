@@ -2,28 +2,27 @@
 % Please edit documentation in R/rank_transform.R
 \name{rbi_normal_transform}
 \alias{rbi_normal_transform}
-\title{Rank based inverse normal transformation}
+\title{Rank-based inverse normal transformation}
 \usage{
 rbi_normal_transform(x, ties_method = c("max", "min", "average"))
 }
 \arguments{
-\item{x}{a numeric vector}
+\item{x}{a numeric vector.}
 
-\item{ties_method}{Method on how to deal with equal values 
-during rank transformation.Acceptable input:"max","average","min". This
-parameter is passed to the parameter \code{ties.method} of 
-\code{\link[base]{rank}}.}
+\item{ties_method}{character string indicating how to handle ties 
+when computing sample ranks. Can be any of "max","average" or "min". This
+is passed to the parameter \code{ties.method} of \code{\link[base]{rank}}.}
 }
 \value{
 A numeric vector.
 }
 \description{
-Applies the rank based inverse normal transformation to numeric vector.
+Applies the rank-based inverse normal transformation to a numeric vector.
 }
 \details{
-The rank based inverse normal transformation (Beasley et al. (2009)), 
-transforms values of a vector to ranks and then applies the quantile 
-function of the standard normal distribution.
+The rank-based inverse normal transformation (Beasley et al. (2009)), 
+transforms values of a vector of length n to ranks/(n + 1) 
+and then applies the quantile function of the standard normal distribution.
 }
 \examples{
 
@@ -32,9 +31,9 @@ test_rank <- rbi_normal_transform(Cleveland[,1])
 
 }
 \references{
-Beasley, T.M. and Erickson S. and Allison D.B. (2009), 
-``Rank-based inverse normal transformations are increasingly used, 
-but are they merited?,'' \emph{Behavior genetics} \strong{39}, 580-595.
+Beasley, T.M. and Erickson S. and Allison D.B. (2009). 
+Rank-based inverse normal transformations are increasingly used, 
+but are they merited? \emph{Behavior genetics}, 39, 580-595.
 }
 \author{
 Andreas Ziegler, Francisco M. Ojeda, George Koliopanos

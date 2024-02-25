@@ -37,23 +37,24 @@ modgo(
 \item{data}{a data frame containing the data whose characteristics are to be
 mimicked during the data simulation.}
 
-\item{ties_method}{Method on how to deal with equal values
-during rank transformation. Acceptable input:"max","average","min". This
+\item{ties_method}{Method used to deal with ties
+during rank transformation. Allowed input: "max","average" or "min". This
 parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the
 parameter \code{ties.method} of \code{\link[base]{rank}}.}
 
-\item{variables}{a vector of which variables you want to transform.
-Default:colnames(data)}
+\item{variables}{a character vector indicating the columns in \code{data} 
+to be used. Default: \code{colnames(data)}.}
 
-\item{bin_variables}{a character vector listing the binary variables.}
+\item{bin_variables}{a character vector listing those entries in 
+\code{variables} to be treated as binary variables.}
 
-\item{categ_variables}{a character vector listing the ordinal categorical
-variables.}
+\item{categ_variables}{a character vector listing those entries in 
+\code{variables} to be treated as ordinal categorical variables, with 
+more than two categories. See Details.}
 
-\item{count_variables}{a character vector listing the count as a sub
-sub category of categorical variables. Count variables should be part
-of categorical variables vector. Count variables are treated differently
-when using gldex to simulate them.}
+\item{count_variables}{a character vector listing those entries 
+\code{categ_variables}  to be treated as count variables. Relevant only when
+\code{generalized_mode = TRUE}.}
 
 \item{n_samples}{Number of rows of each simulated data set. Default is
 the number of rows of \code{data}.}
@@ -61,10 +62,11 @@ the number of rows of \code{data}.}
 \item{sigma}{a covariance matrix of NxN (N= number of variables)
 provided by the user to bypass the covariance matrix calculations}
 
-\item{nrep}{number of repetitions.}
+\item{nrep}{number of simulated datasets to be generated.}
 
-\item{noise_mu}{Logical value if you want to apply noise to
-multivariate mean. Default: FALSE}
+\item{noise_mu}{Logical. Should noise be added to the
+mean vector of the multivariate normal distribution used to draw the 
+simulated values? Default: FALSE.}
 
 \item{pertr_vec}{A named vector.Vector's names are the continuous variables
 that the user want to perturb. Variance of simulated data set mimic original
@@ -148,15 +150,23 @@ from a multivariate normal distribution.}
 \item{sim_dataset_number}{Number of simulated datasets produced.}
 }
 \description{
-\code{modgo} Create mock dataset from a real one by using
-ranked based inverse normal transformation. Data with perturbed
+Creates synthetic dataset based on real data by means of the
+rank-based inverse normal transformation. Data with perturbed
 characteristics can be generated.
 }
 \details{
-Simulated data is generated based on available data. The simulated data
-mimics the characteristics of the original data. The algorithm used is
-based on the ranked based inverse normal transformation (Koliopanos et
-al. (2023)).
+Simulated data is generated based on available data. The algorithm 
+used is based on the ranked-based inverse normal transformation 
+(Koliopanos et al. (2023)) and attempts to mimic the characteristics of the 
+original data. 
+
+All variables passed to \code{modgo} should be of class 
+double or integer. This includes the variables passed to the parameter
+\code{categ_variables}. The character vector \code{variables}, indicating
+the variables in \code{data} to be used in the simulation, should 
+contain at least two variables. The variables in \code{variables} not present
+in \code{bin_variables} nor \code{categ_variables} will be treated as 
+continuous variables.
 }
 \examples{
 data("Cleveland",package="modgo")
@@ -165,9 +175,9 @@ test_modgo <- modgo(data = Cleveland,
      categ_variables =c("Chestpaintype"))
 }
 \references{
-Koliopanos, G. and Ojeda, F. and Ziegler Andreas (2023),
-``A simple-to-use R package for mimicking study data by simulations,''
-\emph{Methods Inf Med}.
+Koliopanos, G., Ojeda, F. and Ziegler A. (2023).
+A simple-to-use R package for mimicking study data by simulations.
+\emph{Methods Inf Med}, 62(03/04), 119-129.
 }
 \author{
 Francisco M. Ojeda, George Koliopanos
