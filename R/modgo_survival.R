@@ -218,10 +218,7 @@ modgo_survival <-
 
     correlation_matrix <- do.call(modgo, .args_corr)$covariance_matrix
     # Survival Method number 2
-    if(surv_method == 2 & length(.args$sigma) == 0){
-      .args$sigma <- correlation_matrix[rownames(correlation_matrix)!= event_variable,
-                                        colnames(correlation_matrix)!= event_variable]
-    }
+    
     .args$generalized_mode <- TRUE
     # Setting up the arguments to be used for each modgo run
     .args_no_event <- .args_event <- .args
@@ -263,7 +260,29 @@ modgo_survival <-
       return(res)
     }
     
-
+    if(surv_method == 2){
+      
+      .args_no_event_cov_matrix <- .args_no_event
+      .args_event_cov_matrix <- .args_event
+      
+      .args_no_event_cov_matrix$stop_sim <- 
+        .args_event_cov_matrix$stop_sim <- 
+        TRUE
+      
+      .args_no_event$sigma <- .args_event$sigma <- correlation_matrix[rownames(correlation_matrix)!= event_variable,
+                                                                      colnames(correlation_matrix)!= event_variable]
+      
+      .args_no_event$sigma[,time_variable] <-
+        .args_no_event$sigma[time_variable,] <- 
+        do.call(modgo,
+                .args_no_event_cov_matrix)$covariance_matrix[time_variable,]
+      
+      .args_event$sigma[,time_variable] <-
+        .args_event$sigma[time_variable,] <- 
+        do.call(modgo,
+                .args_event_cov_matrix)$covariance_matrix[time_variable,]
+      
+    }
     modgo_no_event <- do.call(modgo, .args_no_event)
     status <- rep(0,dim(modgo_no_event$simulated_data[[1]])[1])
     modgo_no_event$simulated_data <- lapply(modgo_no_event$simulated_data,
@@ -287,6 +306,8 @@ modgo_survival <-
     results[["original_data"]] <- data
     results[["simulated_data"]] <- Simulated_Datasets
     results[["correlations"]] <- Correlations_matrices
+    results[["correlations_no_event"]] <- modgo_no_event$correlations
+    results[["correlations_event"]] <- modgo_event$correlations
     
     results[["covariance_matrix"]] <- c()
     results[["covariance_matrix"]]$no_event <- modgo_no_event$covariance_matrix
