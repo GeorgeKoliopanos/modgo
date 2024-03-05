@@ -6,7 +6,7 @@
 
 modgo is an R package Mock Data Generation (modgo) that may be used for
 simulating data from existing study data for continuous, ordinal categorical,
-and dichotomous variables[reference].
+and dichotomous variables.
 
 ## Installation
 
