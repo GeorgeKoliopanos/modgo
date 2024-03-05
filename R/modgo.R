@@ -151,15 +151,16 @@ modgo <-
       set.seed(seed)
       
     }
+
+    # Check Arguments
+    .args <- as.list(match.call()[-1])
+    do.call(checkArguments, .args, envir = parent.frame(n = 2))
+
     # Find the continuous variables
     continuous_var <-
       setdiff(variables, c(bin_variables, categ_variables))
     
-    data <- data[, variables]
-    # Check Arguments
-    .args <- as.list(match.call()[-1])
-    do.call(checkArguments, .args)
-    
+    data <- data[, variables]        
     
     # Noise in multivariate distributions centers
     if (noise_mu == TRUE) {
