@@ -20,12 +20,13 @@ corr_plots(
 be used in plots.}
 }
 \value{
-A patchwork object created by \code{\link[patchwork]{wrap_plots}}.
+A patchwork object created by 
+\code{\link[patchwork:wrap_plots]{patchwork::wrap_plots}}.
 }
 \description{
-Produces a graphical display of the correlation matrix of the original 
-dataset, a  single simulated  dataset and also of the  average of the 
-correlation matrices across all simulations for an object returned by 
+Produces a graphical display of the Pearson correlation matrix of the 
+original dataset, a  single simulated  dataset and also of the average of 
+the correlation matrices across all simulations for an object returned by 
 \code{\link[modgo]{modgo}}.
 }
 \examples{

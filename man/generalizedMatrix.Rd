@@ -13,24 +13,24 @@ generalizedMatrix(
 )
 }
 \arguments{
-\item{data}{a data frame with original variables.}
+\item{data}{A data frame with original variables.}
 
-\item{variables}{a vector of which variables you want to transform.
+\item{variables}{A vector of which variables you want to transform.
 Default:colnames(data)}
 
-\item{bin_variables}{a character vector listing the binary variables.}
+\item{bin_variables}{A character vector listing the binary variables.}
 
 \item{generalized_mode_model}{A matrix that contains two columns named "Variables" and
 "Model". This matrix can be used only if a generalized_mode_model argument is
 provided. It specifies what model should be used for each Variable.
 Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
 e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-The user can select Generalized Poisson model for poisson variables,
+The user can select Generalized Poisson model for Poisson variables,
 but this model cannot be included in bimodal simulation}
 
 \item{multi_sugg_prop}{A named vector that provides a  proportion of
 value=1 for specific binary variables(=name of the vector) that will be
-the close to the proportion of this value in the simulated data sets.}
+the close to the proportion of this value in the simulated datasets.}
 }
 \value{
 A numeric matrix

@@ -39,7 +39,7 @@ modgo_survival(
 )
 }
 \arguments{
-\item{data}{a data frame containing the data whose characteristics are to be
+\item{data}{A data frame containing the data whose characteristics are to be
 mimicked during the data simulation.}
 
 \item{event_variable}{a character string listing the event variable.}
@@ -48,9 +48,9 @@ mimicked during the data simulation.}
 
 \item{surv_method}{A numeric value that indicates which one of the 2 survival
 methods will be used.
-First method(surv_method = 1): Event and no event data sets are using 
+First method (surv_method = 1): Event and no event datasets are using 
 different covariance matrices for the simulation.
-Second method(surv_method = 2): Event and no event data sets
+Second method(surv_method = 2): Event and no event datasets
 are using the same covariance matrix for the simulation}
 
 \item{ties_method}{Method on how to deal with equal values
@@ -71,7 +71,7 @@ sub category of categorical variables. Count variables should be part
 of categorical variables vector. Count variables are treated differently
 when using gldex to simulate them.}
 
-\item{n_samples}{Number of rows of each simulated data set. Default is
+\item{n_samples}{Number of rows of each simulated dataset. Default is
 the number of rows of \code{data}.}
 
 \item{sigma}{a covariance matrix of NxN (N= number of variables)
@@ -83,7 +83,7 @@ provided by the user to bypass the covariance matrix calculations}
 multivariate mean. Default: FALSE}
 
 \item{pertr_vec}{A named vector.Vector's names are the continuous variables
-that the user want to perturb. Variance of simulated data set mimic original
+that the user want to perturb. Variance of simulated dataset mimic original
 data's variance.}
 
 \item{change_cov}{change the covariance of a specific pair of variables.}
@@ -105,16 +105,16 @@ than 10\%}
 
 \item{var_prop}{A named vector that provides a  proportion of
 value=1 for a specific binary variable(=name of the vector) that will be
-the proportion of this value in the simulated data sets.[this may increase
+the proportion of this value in the simulated datasets.[this may increase
 execution time drastically]}
 
 \item{var_infl}{A named vector.Vector's names are the continuous variables
 that the user want to perturb and increase their variance}
 
 \item{infl_cov_stable}{Logical value. If TRUE,perturbation is applied to
-original data set and simulations values mimic the perturbed original data
+original dataset and simulations values mimic the perturbed original data
 set.Covariance matrix used for simulation = original data's correlations.
-If FALSE, perturbation is applied to the simulated data sets.}
+If FALSE, perturbation is applied to the simulated datasets.}
 
 \item{tol}{A numeric value that set up
 tolerance(relative to largest variance) for numerical lack of
@@ -125,14 +125,14 @@ stop before simulation and produce only the correlation matrix}
 
 \item{new_mean_sd}{A matrix that contains two columns named
 "Mean" and "SD" that the user specifies desired Means and Standard Deviations
-in the simulated data sets for specific continues variables. The variables
-must be declared as ROWNAMES in the matrix}
+in the simulated datasets for specific continues variables. The variables
+must be declared as ROWNAMES in the matrix.}
 
 \item{multi_sugg_prop}{A named vector that provides a  proportion of
 value=1 for specific binary variables(=name of the vector) that will be
-the close to the proportion of this value in the simulated data sets.}
+the close to the proportion of this value in the simulated datasets.}
 
-\item{generalized_mode}{A logical value indicating if generalized lambda/poisson
+\item{generalized_mode}{A logical value indicating if generalized lambda/Poisson
 distributions or set up thresholds will be used to generate the simulated values}
 
 \item{generalized_mode_model}{A matrix that contains two columns named "Variable" and
@@ -140,28 +140,30 @@ distributions or set up thresholds will be used to generate the simulated values
 provided. It specifies what model should be used for each Variable.
 Model values should be "rmfmkl", "rprs", "star" or a combination of them,
 e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
-The user can select Generalised Poisson model for poisson variables,
+The user can select Generalised Poisson model for Poisson variables,
 but this model cannot be included in bimodal simulation}
 
-\item{generalized_mode_model_event}{A matrix that contains two columns named "Variable" and
-"Model" and it is to be used for the event data set(event = 1). This matrix can be used only if a generalized_mode_model argument is
-provided. It specifies what model should be used for each Variable.
-Model values should be "rmfmkl", "rprs", "star" or a combination of them,
-e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
-The user can select Generalised Poisson model for poisson variables,
-but this model cannot be included in bimodal simulation}
+\item{generalized_mode_model_event}{A matrix that contains two columns 
+named "Variable" and "Model" and it is to be used for the event 
+dataset (event = 1). This matrix can be used only if a generalized_mode_model 
+argument is provided. It specifies what model should be used for each 
+Variable. Model values should be "rmfmkl", "rprs", "star" or a combination of 
+them, e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal 
+simulation. The user can select Generalised Poisson model for Poisson 
+variables, but this model cannot be included in bimodal simulation.}
 
-\item{generalized_mode_model_no_event}{A matrix that contains two columns named "Variable" and
-"Model" and it is to be used for the non-event data set(event = 0). This matrix can be used only if a generalized_mode_model argument is
-provided. It specifies what model should be used for each Variable.
-Model values should be "rmfmkl", "rprs", "star" or a combination of them,
-e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
-The user can select Generalised Poisson model for poisson variables,
-but this model cannot be included in bimodal simulation}
+\item{generalized_mode_model_no_event}{A matrix that contains two columns 
+named "Variable" and "Model" and it is to be used for the non-event 
+dataset (event = 0). This matrix can be used only if a generalized_mode_model 
+argument is provided. It specifies what model should be used for each 
+Variable. Model values should be "rmfmkl", "rprs", "star" or a combination 
+of them, e.g. "rmfmkl-rprs" or "star-star", in case the use wants a 
+bimodal simulation. The user can select Generalised Poisson model for 
+Poisson variables, but this model cannot be included in bimodal simulation}
 
-\item{generalized_mode_lmbds}{A matrix that contains lambdas values for each of the
-variables of the data set to be used for either Generalized Lambda Distribution
-Generalized Poisson Distribution or setting up thresholds}
+\item{generalized_mode_lmbds}{A matrix that contains lambdas values for 
+each of the variables of the dataset to be used for either Generalized 
+Lambda Distribution Generalized Poisson Distribution or setting up thresholds}
 }
 \value{
 A list with the following components:
@@ -181,7 +183,7 @@ from a multivariate normal distribution.}
 }
 \description{
 \code{modgo_survival} Create mock dataset from a real one by using
-Generalized Lambdas Distributions and by seperating the data set in 2 based
+Generalized Lambdas Distributions and by separating the dataset in 2 based
 in the event status.
 }
 \details{

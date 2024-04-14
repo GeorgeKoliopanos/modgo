@@ -2,12 +2,12 @@
 #' 
 #' Inverse transforms z values of a vector to simulated values driven by
 #' the original dataset using Generalized Lambda and Generalized Poisson 
-#' percentile functions
+#' percentile functions.
 #' 
-#' @param x a vector of z values
-#' @param data a data frame with original variables.
-#' @param n_samples number of samples you need to produce.
-#' @param lmbds a vector with generalized lambdas values
+#' @param x A vector of z values.
+#' @param data A data frame with original variables.
+#' @param n_samples Number of samples you need to produce.
+#' @param lmbds A vector with generalized lambdas values
 #' @return A numeric vector.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 

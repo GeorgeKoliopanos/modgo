@@ -14,13 +14,13 @@
 #'  sub category of categorical variables. Count variables should be part
 #'  of categorical variables vector. Count variables are treated differently
 #'  when using gldex to simulate them.
-#' @param n_samples Number of rows of each simulated data set. Default is
+#' @param n_samples Number of rows of each simulated dataset. Default is
 #' the number of rows of \code{data}.
 #' @param generalized_mode A logical value indicating if 
-#' generalized lambda/poisson distributions or set up thresholds will be used to
+#' generalized lambda/Poisson distributions or set up thresholds will be used to
 #' generate the simulated values
 #' @param generalized_mode_lmbds A matrix that contains lambdas values for each 
-#' of the variables of the data set to be used for either Generalized Lambda
+#' of the variables of the dataset to be used for either Generalized Lambda
 #' Distribution Generalized Poisson Distribution or setting up thresholds 
 #' @return A correlation matrix.
 #' @author Francisco M. Ojeda, George Koliopanos

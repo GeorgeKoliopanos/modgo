@@ -1,78 +1,17 @@
 #' Check Arguments
 #'
-#' Check that the arguments are following
-#' the corresponding conditions
-#' @param data a data frame containing the data whose characteristics are to be
-#' mimicked during the data simulation.
-#' @param sigma a covariance matrix of NxN (N= number of variables)
-#' provided by the user to bypass the covariance matrix calculations
-#' @param ties_method Method on how to deal with equal values
-#' during rank transformation. Acceptable input:"max","average","min". This
-#' parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the
-#' parameter \code{ties.method} of \code{\link[base]{rank}}.
-#' @param variables a vector of which variables you want to transform.
-#' Default:colnames(data)
-#' @param bin_variables  a character vector listing the binary variables.
-#' @param categ_variables a character vector listing the ordinal categorical
-#' variables.
-#' @param count_variables a character vector listing the count as a sub
-#'  sub category of categorical variables. Count variables should be part
-#'  of categorical variables vector. Count variables are treated differently
-#'  when using gldex to simulate them.
-#' @param nrep number of repetitions.
-#' @param noise_mu Logical value if you want to apply noise to
-#' multivariate mean. Default: FALSE
-#' @param pertr_vec A named vector.Vector's names are the continuous variables
-#' that the user want to perturb. Variance of simulated data set mimic original
-#' data's variance.
-#' @param var_infl A named vector.Vector's names are the continuous variables
-#' that the user want to perturb and increase their variance
-#' @param infl_cov_stable Logical value. If TRUE,perturbation is applied to
-#' original data set and simulations values mimic the perturbed original data
-#' set.Covariance matrix used for simulation = original data's correlations.
-#' If FALSE, perturbation is applied to the simulated data sets.
-#' @param n_samples Number of rows of each simulated data set. Default is
-#' the number of rows of \code{data}.
-#' @param change_cov change the covariance of a specific pair of variables.
-#' @param change_amount the amount of change in  the covariance
-#'  of a specific pair of variables.
-#' @param seed A numeric value specifying the random seed. If \code{seed = NA},
-#' no random seed is set.
-#' @param thresh_var A data frame that contains the thresholds(left and right)
-#' of specified variables
-#' (1st column: variable names, 2nd column: Left thresholds,
-#' 3rd column: Right thresholds)
-#' @param thresh_force A logical value indicating if you want to force threshold
-#' in case the proportion of samples that can surpass the threshold are less
-#' than 10\%
-#' @param var_prop A named vector that provides a  proportion of
-#'  value=1 for a specific binary variable(=name of the vector) that will be
-#'  the proportion of this value in the simulated data sets.[this may increase
-#'  execution time drastically]
-#' @param multi_sugg_prop A named vector that provides a  proportion of
-#'  value=1 for specific binary variables(=name of the vector) that will be
-#'  the close to the proportion of this value in the simulated data sets.
-#' @param tol A numeric value that set up
-#'  tolerance(relative to largest variance) for numerical lack of
-#'  positive-definiteness in Sigma
-#' @param stop_sim A logical value indicating if the analysis should
-#' stop before simulation and produce only the correlation matrix
-#' @param generalized_mode A logical value indicating if you want to use generalized 
-#' distribution to simulate your data
-#' @param generalized_mode_model A matrix that contains two columns named "Variable" and
-#' "Model". This matrix can be used only if a generalized_mode_model argument is
-#' provided. It specifies what model should be used for each Variable.
-#' Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
-#' e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-#' The user can select Generalised Poisson model for poisson variables,
-#' but this model cannot be included in bimodal simulation.
-#' @param generalized_mode_lmbds A matrix that contains lmbds values for each of the
-#' variables of the data set to be used for either Generalized Lambda Distribution
-#' Generalized Poisson Distribution or setting up thresholds
-#' @param new_mean_sd A matrix that contains two columns named
-#' "Mean" and "SD" that the user specifies desired Means and Standard Deviations
-#' in the simulated data sets for specific continues variables. The variables
-#' must be declared as ROWNAMES in the matrix
+#' This function is used internally by \code{modgo} to check the correctness 
+#' of the arguments passed to it.  
+#' 
+#' All variables passed to \code{modgo} should be of class 
+#' double or integer. This includes the variables passed to the parameter
+#' \code{categ_variables}. The character vector \code{variables}, indicating
+#' the variables in \code{data} to be used in the simulation, should 
+#' contain at least two variables. The variables in \code{variables} not present
+#' in \code{bin_variables} nor \code{categ_variables} will be treated as 
+#' continuous variables.
+#' 
+#' @inheritParams modgo
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @export
 
@@ -118,18 +57,18 @@ checkArguments <-
     
     #Check input
     if (is.null(data)){
-      message("Data set is not provided")
+      message("Dataset is not provided")
       if(is.null(sigma)){
-        stop("Since Data set is not provided, you need to provide the Correlation Matrix(sigma)")
+        stop("Since Dataset is not provided, you need to provide the Correlation Matrix(sigma)")
       }
       if(generalized_mode != TRUE){
-        stop("Since Data set is not provided, you need to provide generalized_mode should be TRUE")
+        stop("Since Dataset is not provided, you need to provide generalized_mode should be TRUE")
       }
       if(is.null(generalized_mode_lmbds)){
-        stop("Since Data set is not provided, you need to provide generalized_mode_lmbds")
+        stop("Since Dataset is not provided, you need to provide generalized_mode_lmbds")
       }
       if(is.null(n_samples)){
-        stop("Since Data set is not provided, you need to provide samples size")
+        stop("Since Dataset is not provided, you need to provide samples size")
       }
     }
     # Check that number of repetitions is an Integer number above 0
@@ -170,11 +109,11 @@ checkArguments <-
       }
       # Check that data does not contain NAs
       if (any(is.na(data))) {
-        stop("Data set contains NA's")
+        stop("Dataset contains NA's")
       }
       # Check that data has at least 2 columns
       if (dim(data)[2] < 2) {
-        stop("Data set must contain at least 2 columns")
+        stop("Dataset must contain at least 2 columns")
       }
       # Check that declared variables are part of the column names of data
       if (!all(variables %in% colnames(data))) {

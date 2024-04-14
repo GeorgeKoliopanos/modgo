@@ -1,20 +1,20 @@
 #' Generalized Lambda and Poisson preparation
 #' 
 #' Prepare the four moments matrix for GLD and GPD
-#' @param data a data frame with original variables.
-#' @param variables a vector of which variables you want to transform.
+#' @param data A data frame with original variables.
+#' @param variables A vector of which variables you want to transform.
 #' Default:colnames(data)
-#' @param bin_variables  a character vector listing the binary variables.
+#' @param bin_variables  A character vector listing the binary variables.
 #' @param generalized_mode_model A matrix that contains two columns named "Variables" and
 #' "Model". This matrix can be used only if a generalized_mode_model argument is
 #' provided. It specifies what model should be used for each Variable.
 #' Model values should be "RMFMKL", "RPRS", "STAR" or a combination of them,
 #' e.g. "RMFMKL-RPRS" or "STAR-STAR", in case the use wants a bimodal simulation.
-#' The user can select Generalized Poisson model for poisson variables,
+#' The user can select Generalized Poisson model for Poisson variables,
 #' but this model cannot be included in bimodal simulation
 #' @param multi_sugg_prop A named vector that provides a  proportion of
 #'  value=1 for specific binary variables(=name of the vector) that will be
-#'  the close to the proportion of this value in the simulated data sets.
+#'  the close to the proportion of this value in the simulated datasets.
 #' @return A numeric matrix
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @examples
@@ -128,7 +128,7 @@ generalizedMatrix <- function(data,
         if(i %in% multi_sugg_prop){
           generalized_mode_lmbds[1,i] <- multi_sugg_prop[i]
           }else{
-        # Calculate data set proportion
+        # Calculate dataset proportion
           generalized_mode_lmbds[1,i] <-  table(data[[i]])["1"]/sum(table(data[[i]]))
           }
       }else{

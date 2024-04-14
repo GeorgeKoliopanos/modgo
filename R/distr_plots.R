@@ -1,16 +1,18 @@
 #' Plots distribution of original and simulated data
 #' 
 #' Produces a graphical display of the distribution of the variables
-#' of the original dataset and a single simulated dataset for an object 
+#' in the original and a single simulated dataset for an object 
 #' returned by \code{\link[modgo]{modgo}}.
 #' 
-#' For continuous variables box-and-whisker plots are displayed, while 
-#' categorical variables bar charts are produced.
+#' Box-and-whisker plots and bar charts are produced for
+#' continuous and categorical variables, respectively.
 #' 
 #' @inheritParams corr_plots
-#' @param  wespalette a name of the selected wesanderson color pallet
-#' @param  text_size a number for the  size of the annotation text
-#' @return a plot.
+#' @param  wespalette Name of selected Wes Anderson color palette. Passed 
+#' to \code{\link[wesanderson:wes_palette]{wesanderson::wes_palette}}.
+#' @param  text_size Text size in plot for legend, tick mark and axes labels. 
+#' Passed to \code{\link[ggplot2:element_text]{ggplot2::element_text}}. 
+#' @return a \code{gtable}  object from package gtable.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
 #' @examples 

@@ -7,13 +7,13 @@
 general_transform_inv(x, data = NULL, n_samples, lmbds)
 }
 \arguments{
-\item{x}{a vector of z values}
+\item{x}{A vector of z values.}
 
-\item{data}{a data frame with original variables.}
+\item{data}{A data frame with original variables.}
 
-\item{n_samples}{number of samples you need to produce.}
+\item{n_samples}{Number of samples you need to produce.}
 
-\item{lmbds}{a vector with generalized lambdas values}
+\item{lmbds}{A vector with generalized lambdas values}
 }
 \value{
 A numeric vector.
@@ -21,7 +21,7 @@ A numeric vector.
 \description{
 Inverse transforms z values of a vector to simulated values driven by
 the original dataset using Generalized Lambda and Generalized Poisson 
-percentile functions
+percentile functions.
 }
 \examples{
 data("Cleveland",package="modgo")

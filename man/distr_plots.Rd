@@ -21,21 +21,23 @@ be used in plots.}
 \item{sim_dataset}{Number indicating the simulated dataset in 
 \code{Modgo_obj} to be used in plots.}
 
-\item{wespalette}{a name of the selected wesanderson color pallet}
+\item{wespalette}{Name of selected Wes Anderson color palette. Passed 
+to \code{\link[wesanderson:wes_palette]{wesanderson::wes_palette}}.}
 
-\item{text_size}{a number for the  size of the annotation text}
+\item{text_size}{Text size in plot for legend, tick mark and axes labels. 
+Passed to \code{\link[ggplot2:element_text]{ggplot2::element_text}}.}
 }
 \value{
-a plot.
+a \code{gtable}  object from package gtable.
 }
 \description{
 Produces a graphical display of the distribution of the variables
-of the original dataset and a single simulated dataset for an object 
+in the original and a single simulated dataset for an object 
 returned by \code{\link[modgo]{modgo}}.
 }
 \details{
-For continuous variables box-and-whisker plots are displayed, while 
-categorical variables bar charts are produced.
+Box-and-whisker plots and bar charts are produced for
+continuous and categorical variables, respectively.
 }
 \examples{
 data("Cleveland",package="modgo")

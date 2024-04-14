@@ -17,40 +17,40 @@
 #' in \code{bin_variables} nor \code{categ_variables} will be treated as 
 #' continuous variables.
 #'
-#' @param data a data frame containing the data whose characteristics are to be
+#' @param data A data frame containing the data whose characteristics are to be
 #' mimicked during the data simulation.
-#' @param sigma a covariance matrix of NxN (N= number of variables)
+#' @param sigma A covariance matrix of NxN (N= number of variables)
 #' provided by the user to bypass the covariance matrix calculations
 #' @param ties_method Method used to deal with ties
 #' during rank transformation. Allowed input: "max","average" or "min". This
 #' parameter is passed by \code{\link[modgo]{rbi_normal_transform}} to the
 #' parameter \code{ties.method} of \code{\link[base]{rank}}.
-#' @param variables a character vector indicating the columns in \code{data} 
+#' @param variables A character vector indicating the columns in \code{data} 
 #' to be used. Default: \code{colnames(data)}.
-#' @param bin_variables  a character vector listing those entries in 
+#' @param bin_variables  A character vector listing those entries in 
 #' \code{variables} to be treated as binary variables. 
-#' @param categ_variables a character vector listing those entries in 
+#' @param categ_variables A character vector listing those entries in 
 #' \code{variables} to be treated as ordinal categorical variables, with 
 #' more than two categories. See Details.
-#' @param count_variables a character vector listing those entries 
+#' @param count_variables A character vector listing those entries 
 #' \code{categ_variables}  to be treated as count variables. Relevant only when
 #' \code{generalized_mode = TRUE}.
-#' @param nrep number of simulated datasets to be generated.
+#' @param nrep Number of simulated datasets to be generated.
 #' @param noise_mu Logical. Should noise be added to the  
 #' mean vector of the multivariate normal distribution used to draw the 
 #' simulated values? Default: FALSE.
-#' @param pertr_vec A named vector.Vector's names are the continuous variables
-#' that the user want to perturb. Variance of simulated data set mimic original
+#' @param pertr_vec A named vector. Vector's names are the continuous variables
+#' that the user want to perturb. Variance of simulated dataset mimic original
 #' data's variance.
-#' @param var_infl A named vector.Vector's names are the continuous variables
+#' @param var_infl A named vector. Vector's names are the continuous variables
 #' that the user want to perturb and increase their variance
 #' @param infl_cov_stable Logical value. If TRUE,perturbation is applied to
-#' original data set and simulations values mimic the perturbed original data
-#' set.Covariance matrix used for simulation = original data's correlations.
-#' If FALSE, perturbation is applied to the simulated data sets.
-#' @param n_samples Number of rows of each simulated data set. Default is
+#' original dataset and simulations values mimic the perturbed original 
+#' dataset. Covariance matrix used for simulation = original data's correlations.
+#' If FALSE, perturbation is applied to the simulated datasets.
+#' @param n_samples Number of rows of each simulated dataset. Default is
 #' the number of rows of \code{data}.
-#' @param change_cov change the covariance of a specific pair of variables.
+#' @param change_cov Change the covariance of a specific pair of variables.
 #' @param change_amount the amount of change in  the covariance
 #'  of a specific pair of variables.
 #' @param seed A numeric value specifying the random seed. If \code{seed = NA},
@@ -63,41 +63,42 @@
 #' in case the proportion of samples that can surpass the threshold are less
 #' than 10\%
 #' @param var_prop A named vector that provides a  proportion of
-#'  value=1 for a specific binary variable(=name of the vector) that will be
-#'  the proportion of this value in the simulated data sets.[this may increase
+#'  value=1 for a specific binary variable (=name of the vector) that will be
+#'  the proportion of this value in the simulated datasets.[this may increase
 #'  execution time drastically]
 #' @param multi_sugg_prop A named vector that provides a  proportion of
-#'  value=1 for specific binary variables(=name of the vector) that will be
-#'  the close to the proportion of this value in the simulated data sets.
+#'  value=1 for specific binary variables (=name of the vector) that will be
+#'  the close to the proportion of this value in the simulated datasets.
 #' @param tol A numeric value that set up
 #'  tolerance(relative to largest variance) for numerical lack of
 #'  positive-definiteness in Sigma
 #' @param stop_sim A logical value indicating if the analysis should
 #' stop before simulation and produce only the correlation matrix
-#' @param generalized_mode A logical value indicating if generalized lambda/poisson
+#' @param generalized_mode A logical value indicating if generalized lambda/Poisson
 #'  distributions or set up thresholds will be used to generate the simulated values
-#' @param generalized_mode_model A matrix that contains two columns named "Variable" and
-#' "Model". This matrix can be used only if a generalized_mode_model argument is
-#' provided. It specifies what model should be used for each Variable.
-#' Model values should be "rmfmkl", "rprs", "star" or a combination of them,
-#' e.g. "rmfmkl-rprs" or "star-star", in case the use wants a bimodal simulation.
-#' The user can select Generalised Poisson model for poisson variables,
+#' @param generalized_mode_model A matrix that contains two columns named 
+#' "Variable" and "Model". This matrix can be used only if a 
+#' generalized_mode_model argument is provided. It specifies what model should 
+#' be used for each Variable. Model values should be "rmfmkl", "rprs", "star" 
+#' or a combination of them, e.g. "rmfmkl-rprs" or "star-star", in case the 
+#' user wants a bimodal simulation.
+#' The user can select Generalised Poisson model for Poisson variables,
 #' but this model cannot be included in bimodal simulation
-#' @param generalized_mode_lmbds A matrix that contains lambdas values for each of the
-#' variables of the data set to be used for either Generalized Lambda Distribution
-#' Generalized Poisson Distribution or setting up thresholds
+#' @param generalized_mode_lmbds A matrix that contains lambdas values for each 
+#' of the variables of the dataset to be used for either Generalized Lambda 
+#' Distribution Generalized Poisson Distribution or setting up thresholds
 #' @param new_mean_sd A matrix that contains two columns named
 #' "Mean" and "SD" that the user specifies desired Means and Standard Deviations
-#' in the simulated data sets for specific continues variables. The variables
-#' must be declared as ROWNAMES in the matrix
+#' in the simulated datasets for specific continues variables. The variables
+#' must be declared as ROWNAMES in the matrix.
 #' @return A list with the following components:
 #' \item{simulated_data}{A list of data frames containing the simulated data.}
 #' \item{original_data}{A data frame with the input data.}
-#' \item{correlations}{a list of correlation matrices. The ith element is the
+#' \item{correlations}{A list of correlation matrices. The ith element is the
 #' correlation matrix for the ith simulated dataset. The \code{(repn + 1)}the
 #' (last) element of the list is the average of the correlation matrices.}
-#' \item{bin_variables}{character vector listing the binary variables}
-#' \item{categ_variables }{a character vector listing the ordinal
+#' \item{bin_variables}{A character vector listing the binary variables}
+#' \item{categ_variables }{A character vector listing the ordinal
 #' categorical variables}
 #' \item{covariance_matrix}{Covariance matrix used when generating observations
 #' from a multivariate normal distribution.}

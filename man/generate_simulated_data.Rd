@@ -2,7 +2,7 @@
 % Please edit documentation in R/generate_simulated_data.R
 \name{generate_simulated_data}
 \alias{generate_simulated_data}
-\title{Generate new data set by using previous correlation matrix}
+\title{Generate new dataset by using previous correlation matrix}
 \usage{
 generate_simulated_data(
   data,
@@ -38,31 +38,31 @@ sub category of categorical variables. Count variables should be part
 of categorical variables vector. Count variables are treated differently
 when using gldex to simulate them.}
 
-\item{n_samples}{Number of rows of each simulated data set. Default is
+\item{n_samples}{Number of rows of each simulated dataset. Default is
 the number of rows of \code{data}.}
 
-\item{generalized_mode}{A logical value indicating if generalized lambda/poisson
+\item{generalized_mode}{A logical value indicating if generalized lambda/Poisson
 distributions or set up thresholds will be used to generate the simulated values}
 
 \item{generalized_mode_lmbds}{A matrix that contains lmbds values for each of the
-variables of the data set to be used for either Generalized Lambda Distribution
+variables of the dataset to be used for either Generalized Lambda Distribution
 Generalized Poisson Distribution or setting up thresholds}
 
 \item{multi_sugg_prop}{A named vector that provides a  proportion of
 value=1 for specific binary variables(=name of the vector) that will be
-the close to the proportion of this value in the simulated data sets.}
+the close to the proportion of this value in the simulated datasets.}
 
 \item{pertr_vec}{A named vector.Vector's names are the continuous variables
-that the user want to perturb. Variance of simulated data set mimic original
+that the user want to perturb. Variance of simulated dataset mimic original
 data's variance.}
 
 \item{var_infl}{A named vector.Vector's names are the continuous variables
 that the user want to perturb and increase their variance}
 
 \item{infl_cov_stable}{Logical value. If TRUE,perturbation is applied to
-original data set and simulations values mimic the perturbed original data
+original dataset and simulations values mimic the perturbed original data
 set.Covariance matrix used for simulation = original data's correlations.
-If FALSE, perturbation is applied to the simulated data sets.}
+If FALSE, perturbation is applied to the simulated datasets.}
 }
 \value{
 Simulation Data Frame
