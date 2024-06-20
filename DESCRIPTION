@@ -29,3 +29,5 @@ Imports:
     stats,
     utils,
     survival
+URL: https://github.com/GeorgeKoliopanos/modgo
+BugReports: https://github.com/GeorgeKoliopanos/modgo/issues
