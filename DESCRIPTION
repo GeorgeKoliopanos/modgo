@@ -5,14 +5,15 @@ Version: 1.0.1
 Date: 2022-03-09
 Maintainer: George Koliopanos <george.koliopanos@cardio-care.ch>
 Description: Generation of mock data from a real dataset using rank normal inverse transformation.
-Author: Andreas Ziegler, Francisco Miguel Echevarria, George Koliopanos 
+Author: Andreas Ziegler [aut], Francisco Miguel Echevarria [aut, ctb], George Koliopanos [aut, cre]
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    survival
 VignetteBuilder: knitr
-License: GPL (>= 3)
+License: GPL (>= 3) + file LICENSE
 Depends:
     R (>= 4.1)
 Imports:
@@ -27,7 +28,6 @@ Imports:
     MASS (>= 7.3),
     gp (>= 1.0),
     stats,
-    utils,
-    survival
+    utils
 URL: https://github.com/GeorgeKoliopanos/modgo
 BugReports: https://github.com/GeorgeKoliopanos/modgo/issues
