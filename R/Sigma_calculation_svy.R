@@ -46,7 +46,8 @@ Sigma_calculation_svy <- function (design,
   
 
   # Calculate correlation matrix
-  Sigma <- cov(design[["variables"]][, variables])
+  Sigma <- cov.wt(design_rbi[["variables"]][, variables], 
+                  wt = weights(design_rbi, type = "sampling"))[["cov"]]
   diag(Sigma) <- 1
   
   # Check if categorical variable has
