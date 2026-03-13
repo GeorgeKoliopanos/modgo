@@ -25,7 +25,8 @@ modgo_svy(
   tol = 1e-06,
   stop_sim = FALSE,
   new_mean_sd = NULL,
-  multi_sugg_prop = NULL
+  multi_sugg_prop = NULL,
+  nearPD_maxit = 100
 )
 }
 \arguments{
@@ -103,6 +104,9 @@ must be declared as ROWNAMES in the matrix.}
 \item{multi_sugg_prop}{A named vector that provides a  proportion of
 value=1 for specific binary variables (=name of the vector) that will be
 the close to the proportion of this value in the simulated datasets.}
+
+\item{nearPD_maxit}{maximum number of iterations allowed when
+using \code{\link[Matrix]{nearPD}}.}
 }
 \value{
 A list with the following components:

@@ -36,7 +36,8 @@ checkArguments_svy <-
            tol = 1e-06,
            stop_sim = FALSE,
            new_mean_sd = NULL,
-           multi_sugg_prop = NULL) {
+           multi_sugg_prop = NULL,
+           nearPD_maxit = 100) {
     
     # Find the continuous variables
     continuous_var <-
@@ -59,8 +60,19 @@ checkArguments_svy <-
     }
     
     if (!n_samples == as.integer(n_samples)) {
-      stop("n_samples should be an integer Number")
+      stop("n_samples should be an integer number")
     }
+    
+    # Check if number of iterations of nearPD is integer
+    if (!nearPD_maxit == as.integer(nearPD_maxit)) {
+      stop("nearPD_maxit should be an integer number")
+    }    
+    
+    # Check if number of iterations of nearPD is >= 1
+    if (nearPD_maxit < 1) {
+      stop("nearPD_maxit should be greater or equal than one")
+    }       
+    
     
     # Check that binary variables are part of the declared variables
     if (!all(bin_variables %in% variables)) {
