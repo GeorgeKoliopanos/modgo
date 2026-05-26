@@ -1,4 +1,4 @@
-#' Generate new dataset by using previous correlation matrix
+#' Generate new data set by using previous correlation matrix
 #'
 #' This function is used internally by \code{\link[modgo]{modgo}}. It conducts
 #' the computation of the correlation matrix of the transformed variables, which
@@ -15,26 +15,26 @@
 #'  sub category of categorical variables. Count variables should be part
 #'  of categorical variables vector. Count variables are treated differently
 #'  when using gldex to simulate them.
-#' @param n_samples Number of rows of each simulated dataset. Default is
+#' @param n_samples Number of rows of each simulated data set. Default is
 #' the number of rows of \code{data}.
-#' @param generalized_mode A logical value indicating if generalized lambda/Poisson
+#' @param generalized_mode A logical value indicating if generalized lambda/poisson
 #'  distributions or set up thresholds will be used to generate the simulated values
 #' @param generalized_mode_lmbds A matrix that contains lmbds values for each of the
-#' variables of the dataset to be used for either Generalized Lambda Distribution
+#' variables of the data set to be used for either Generalized Lambda Distribution
 #' Generalized Poisson Distribution or setting up thresholds
 #' @param multi_sugg_prop A named vector that provides a  proportion of
 #'  value=1 for specific binary variables(=name of the vector) that will be
-#'  the close to the proportion of this value in the simulated datasets.
+#'  the close to the proportion of this value in the simulated data sets.
 #' @param pertr_vec A named vector.Vector's names are the continuous variables
-#' that the user want to perturb. Variance of simulated dataset mimic original
+#' that the user want to perturb. Variance of simulated data set mimic original
 #' data's variance.
 #' @param var_infl A named vector.Vector's names are the continuous variables
 #' that the user want to perturb and increase their variance
 #' @param infl_cov_stable Logical value. If TRUE,perturbation is applied to
-#' original dataset and simulations values mimic the perturbed original data
+#' original data set and simulations values mimic the perturbed original data
 #' set.Covariance matrix used for simulation = original data's correlations.
-#' If FALSE, perturbation is applied to the simulated datasets.
-#' @return Simulation Data Frame
+#' If FALSE, perturbation is applied to the simulated data sets.
+#' @return A data frame with simulated values
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Normal rank transformation
 
@@ -71,7 +71,7 @@ generate_simulated_data <- function(data,
         # Generalised transformation using Generalised Lambdas
         df_sim[[j]] <- general_transform_inv(x = df_sim[[j]],
                                              data = data[[j]],
-                                             n_samples = n_samples,
+                                             n_samples = length(df_sim[[j]]),
                                              lmbds = generalized_mode_lmbds[, variable])
       }
     # Round categorical simulated data
