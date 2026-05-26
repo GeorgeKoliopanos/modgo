@@ -27,6 +27,7 @@ Imports:
     GLDEX (>= 2.0.0.9.2),
     MASS (>= 7.3),
     gp (>= 1.0),
+    survey (>= 4.5),
     stats,
     utils
 URL: https://github.com/GeorgeKoliopanos/modgo
