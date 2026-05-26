@@ -1,7 +1,7 @@
 Package: modgo
 Type: Package
 Title: MOck Data GeneratiOn
-Version: 1.0.1
+Version: 1.1.0
 Date: 2022-03-09
 Maintainer: George Koliopanos <george.koliopanos@cardio-care.ch>
 Description: Generation of mock data from a real dataset using rank normal inverse transformation.
