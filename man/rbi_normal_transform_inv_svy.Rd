@@ -10,9 +10,9 @@ rbi_normal_transform_inv_svy(x, design, x_original)
 \item{x}{a numeric vector to which the inverse of a rank-based inverse normal 
 transformation associated with \code{x_original} will be applied.}
 
-\item{x_original}{name of numeric variable in in design object.}
+\item{design}{design object from package `survey`.}
 
-\item{survey}{design object from package `survey`.}
+\item{x_original}{name of numeric variable in in design object.}
 }
 \value{
 A numeric vector.

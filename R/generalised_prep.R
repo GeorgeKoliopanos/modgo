@@ -18,6 +18,7 @@
 #' @return A numeric matrix
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @examples
+#'\donttest{
 #' data("Cleveland",package="modgo")
 #' Variables <- c("Age","STDepression")
 #' Model <- c("rprs", "star-rmfmkl")
@@ -26,6 +27,7 @@
 #' test_modgo <- generalizedMatrix(data = Cleveland,
 #'      generalized_mode_model = model_matrix,
 #'      bin_variables = c("CAD","HighFastBloodSugar","Sex","ExInducedAngina"))
+#'}
 #' @export
 #' @import GLDEX
 #' @import gp

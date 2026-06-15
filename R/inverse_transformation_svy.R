@@ -10,8 +10,8 @@
 #' 
 #' @param x a numeric vector to which the inverse of a rank-based inverse normal 
 #' transformation associated with \code{x_original} will be applied.
-#' @param survey design object from package `survey`.
-#' @param x_original name of numeric variable in in design object.  
+#' @param x_original name of numeric variable in in design object.
+#' @param design design object from package `survey`.
 #' @return A numeric vector.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
@@ -42,6 +42,7 @@
 #' table(x_inv_transf, x_original, useNA = "ifany") 
 #'                                  
 #' @keywords Inverse transformation
+#' @importFrom survey svyquantile
 #' @export
 
 rbi_normal_transform_inv_svy <- function (x, design, x_original) {
@@ -60,8 +61,8 @@ rbi_normal_transform_inv_svy <- function (x, design, x_original) {
   
   the_formula <- as.formula(paste("~ ", x_original))
   for (xval in x_unique) {
-    aux <- survey::svyquantile(the_formula, design = design, 
-                               quantile = pnorm(xval), 
+    aux <- svyquantile(the_formula, design = design, 
+                               quantiles = pnorm(xval), 
                                qrule = "hf1", ci = FALSE, se = FALSE)
     aux <- aux[[x_original]][1]
     pos <- which(x == xval)

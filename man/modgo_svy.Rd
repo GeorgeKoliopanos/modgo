@@ -30,8 +30,7 @@ modgo_svy(
 )
 }
 \arguments{
-\item{design}{survey design object from survey package containing the 
-data whose characteristics are to be mimicked during the data simulation.}
+\item{design}{design object from package `survey`.}
 
 \item{variables}{A character vector indicating the columns in \code{data} 
 to be used. Default: \code{colnames(data)}.}
@@ -144,7 +143,6 @@ continuous variables.
 }
 \examples{
 library(survey)
-# Example 1
 data("api")
 apistrat[["comp.imp_bin"]] <- ifelse(apistrat[["comp.imp"]] == "Yes", 1, 0)
 dstrat <- svydesign(id = ~ 1, strata = ~ stype, weights = ~ pw, 
@@ -153,19 +151,6 @@ test_modgo_1 <- modgo_svy(design = dstrat,
                           variables = c("avg.ed", "full", "comp.imp_bin"),
                           bin_variables = "comp.imp_bin",
                           categ_variables = NULL, nrep = 5)
-# Example 2
-data("nhanes", package = "survey")
-nhanes[["agecat_num"]] <- as.integer(nhanes[["agecat"]])
-nhanes[["female"]] <- as.integer(nhanes[["RIAGENDR"]] == 2)
-design <- svydesign(id = ~ SDMVPSU, strata = ~ SDMVSTRA, 
-                    weights = ~ WTMEC2YR, 
-                    nest = TRUE, data = nhanes)
-design <- subset(design, !is.na(HI_CHOL))
-
-test_modgo_2 <- modgo_svy(design = design,
-                          variables = c("HI_CHOL", "female", "agecat_num"),
-                          bin_variables = c("HI_CHOL", "female"),
-                          categ_variables = "agecat_num", nrep = 5)
 }
 \references{
 Koliopanos, G., Ojeda, F. and Ziegler A. (2023).

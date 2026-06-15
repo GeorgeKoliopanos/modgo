@@ -70,6 +70,7 @@
 #' "Mean" and "SD" that the user specifies desired Means and Standard Deviations
 #' in the simulated datasets for specific continues variables. The variables
 #' must be declared as ROWNAMES in the matrix.
+#' @param design design object from package `survey`.
 #' @param nearPD_maxit maximum number of iterations allowed when
 #' using \code{\link[Matrix]{nearPD}}. 
 #' @return A list with the following components:
@@ -93,7 +94,6 @@
 #' \emph{Methods Inf Med}, 62(03/04), 119-129.
 #' @examples
 #' library(survey)
-#' # Example 1
 #' data("api")
 #' apistrat[["comp.imp_bin"]] <- ifelse(apistrat[["comp.imp"]] == "Yes", 1, 0)
 #' dstrat <- svydesign(id = ~ 1, strata = ~ stype, weights = ~ pw, 
@@ -102,23 +102,12 @@
 #'                           variables = c("avg.ed", "full", "comp.imp_bin"),
 #'                           bin_variables = "comp.imp_bin",
 #'                           categ_variables = NULL, nrep = 5)
-#' # Example 2
-#' data("nhanes", package = "survey")
-#' nhanes[["agecat_num"]] <- as.integer(nhanes[["agecat"]])
-#' nhanes[["female"]] <- as.integer(nhanes[["RIAGENDR"]] == 2)
-#' design <- svydesign(id = ~ SDMVPSU, strata = ~ SDMVSTRA, 
-#'                     weights = ~ WTMEC2YR, 
-#'                     nest = TRUE, data = nhanes)
-#' design <- subset(design, !is.na(HI_CHOL))
-#' 
-#' test_modgo_2 <- modgo_svy(design = design,
-#'                           variables = c("HI_CHOL", "female", "agecat_num"),
-#'                           bin_variables = c("HI_CHOL", "female"),
-#'                           categ_variables = "agecat_num", nrep = 5)
+
 #' @export
 #' @importFrom Matrix nearPD
 #' @importFrom MASS mvrnorm
 #' @import stats
+#' @import wCorr
 
 modgo_svy <-
   function(design,
@@ -404,13 +393,31 @@ modgo_svy <-
           counter <- counter + 1
         } else {
           if (!is.null(design)){
+            
             df_sim <- df_sim[c(1:n_samples),]
+            
             for (j in rownames(new_mean_sd)) {
-              df_sim[[j]] <-
-                ((df_sim[[j]] - mean(OriginalData[[j]])) /  sd(OriginalData[[j]])) * new_mean_sd[j, "SD"] +
+              
+              mean_orig <- survey::svymean(
+                as.formula(paste("~", j)), 
+                design = original_design
+              )
+              mean_orig <- as.numeric(mean_orig)
+              
+              sd_orig <- survey::svyvar(
+                as.formula(paste("~", j)), 
+                design = original_design
+              )
+              sd_orig <- sqrt(as.numeric(sd_orig))    
+              
+              df_sim[[j]] <- 
+                
+                ((df_sim[[j]] - mean_orig) /  sd_orig) * new_mean_sd[j, "SD"] +
                 new_mean_sd[j, "Mean"]
+              
             }
-          }
+          } 
+          
           #Correlation calculation
           Correlations[[i]] <- cor(df_sim)
           SimulatedData[[i]] <- df_sim

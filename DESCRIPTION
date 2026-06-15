@@ -1,19 +1,28 @@
 Package: modgo
 Type: Package
-Title: MOck Data GeneratiOn
+Title: Mock Data Generation
 Version: 1.1.0
-Date: 2022-03-09
+Date: 2026-06-04
 Maintainer: George Koliopanos <george.koliopanos@cardio-care.ch>
 Description: Generation of mock data from a real dataset using rank normal inverse transformation.
 Author: Andreas Ziegler [aut], Francisco Miguel Echevarria [aut, ctb], George Koliopanos [aut, cre]
+Authors@R: c(person(given = "Andreas",
+                         family = "Ziegler",
+                         role = "aut"),
+                  person(given = c("Francisco", "Miguel"),
+                         family = "Echevarria",
+                         role = c("aut", "ctb")),
+                  person(given = "George",
+                         family = "Koliopanos",
+                         role = c("aut", "cre"),
+                         email = "george.koliopanos@cardio-care.ch"))
 Encoding: UTF-8
-RoxygenNote: 7.2.3
 Suggests: 
     knitr,
     rmarkdown,
     survival
 VignetteBuilder: knitr
-License: GPL (>= 3) + file LICENSE
+License: GPL (>= 3)
 Depends:
     R (>= 4.1)
 Imports:
@@ -27,8 +36,10 @@ Imports:
     GLDEX (>= 2.0.0.9.2),
     MASS (>= 7.3),
     gp (>= 1.0),
+    wCorr,
     survey (>= 4.5),
     stats,
     utils
 URL: https://github.com/GeorgeKoliopanos/modgo
 BugReports: https://github.com/GeorgeKoliopanos/modgo/issues
+Config/roxygen2/version: 8.0.0

@@ -35,6 +35,10 @@ variables.}
 \item{n_samples}{Number of rows of each simulated dataset. Default is
 the number of rows of \code{data}.}
 
+\item{multi_sugg_prop}{A named vector that provides a  proportion of
+value=1 for specific binary variables(=name of the vector) that will be
+the close to the proportion of this value in the simulated data sets.}
+
 \item{pertr_vec}{A named vector.Vector's names are the continuous variables
 that the user want to perturb. Variance of simulated dataset mimic original
 data's variance.}

@@ -24,6 +24,9 @@
 #' original dataset and simulations values mimic the perturbed original data
 #' set.Covariance matrix used for simulation = original data's correlations.
 #' If FALSE, perturbation is applied to the simulated datasets.
+#' @param multi_sugg_prop A named vector that provides a  proportion of
+#'  value=1 for specific binary variables(=name of the vector) that will be
+#'  the close to the proportion of this value in the simulated data sets.
 #' @return Simulation Data Frame
 #' @author Francisco M. Ojeda, George Koliopanos
 #' @keywords Normal rank transformation

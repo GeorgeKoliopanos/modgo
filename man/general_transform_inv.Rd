@@ -24,6 +24,7 @@ the original dataset using Generalized Lambda and Generalized Poisson
 percentile functions.
 }
 \examples{
+\donttest{
 data("Cleveland",package="modgo")
 test_rank <- rbi_normal_transform(Cleveland[,1])
 test_generalized_lmbds <- generalizedMatrix(Cleveland, 
@@ -32,7 +33,7 @@ test_inv_rank <- general_transform_inv(x = test_rank,
                   data = Cleveland[,1],
                   n_samples = 100,
                   lmbds = test_generalized_lmbds[,1])
-
+}
 
 
 }

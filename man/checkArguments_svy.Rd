@@ -30,8 +30,7 @@ checkArguments_svy(
 )
 }
 \arguments{
-\item{design}{survey design object from survey package containing the 
-data whose characteristics are to be mimicked during the data simulation.}
+\item{design}{design object from package `survey`.}
 
 \item{variables}{A character vector indicating the columns in \code{data} 
 to be used. Default: \code{colnames(data)}.}

@@ -9,10 +9,10 @@ rbi_normal_transform_svy(x, design, x_transf = paste0(x, "_rbnint"))
 \arguments{
 \item{x}{character string giving name of numeric variable in design object}
 
+\item{design}{design object from package `survey`.}
+
 \item{x_transf}{character string giving name of variable in design object
 that will contain the rank transformed x.}
-
-\item{survey}{design object from survey package.}
 }
 \value{
 The survey design object with the added rank-transformed variable.

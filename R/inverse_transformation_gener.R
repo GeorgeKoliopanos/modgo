@@ -12,6 +12,7 @@
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' 
 #' @examples
+#'\donttest{
 #' data("Cleveland",package="modgo")
 #' test_rank <- rbi_normal_transform(Cleveland[,1])
 #' test_generalized_lmbds <- generalizedMatrix(Cleveland, 
@@ -20,7 +21,7 @@
 #'                   data = Cleveland[,1],
 #'                   n_samples = 100,
 #'                   lmbds = test_generalized_lmbds[,1])
-#' 
+#' }
 #' 
 #' 
 #' @keywords Generalized Inverse transformation

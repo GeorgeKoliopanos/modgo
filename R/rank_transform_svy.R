@@ -16,9 +16,9 @@
 #' Horvitz-Thompson estimator of the population size.
 #' 
 #' @param x character string giving name of numeric variable in design object  
-#' @param survey design object from survey package.
 #' @param x_transf character string giving name of variable in design object
-#' that will contain the rank transformed x.  
+#' that will contain the rank transformed x.
+#' @param design design object from package `survey`.
 #' @return The survey design object with the added rank-transformed variable.
 #' @author Andreas Ziegler, Francisco M. Ojeda, George Koliopanos
 #' @references Beasley, T.M. and Erickson S. and Allison D.B. (2009). 
@@ -35,6 +35,7 @@
 #' svyhist(~ avg.ed, dstrat) 
 #' svyhist(~ avg.ed_transf, dstrat)                                    
 #' @keywords Normal rank transformation
+#' @importFrom survey svycdf
 #' @export
 
 
@@ -50,7 +51,7 @@ rbi_normal_transform_svy <- function (x, design,
   }  
   
   # empirical cumulative distribution function
-  wgt_cdf <- survey::svycdf(as.formula(paste("~", x)), design = design)
+  wgt_cdf <- svycdf(as.formula(paste("~", x)), design = design)
   
   w <- weights(design, type = "sampling")
   n_total <- sum(w)
